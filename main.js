@@ -10,10 +10,50 @@ const renderer = new THREE.WebGLRenderer(); //create renderer
 
 renderer.setSize( window.innerWidth, window.innerHeight ); //set size of renderer to window' size
 renderer.setAnimationLoop( animate ); //creates loop so renderer draws scene every time the screen refreshes
-
+renderer.shadowMap.enabled = true;
 //get DOM element by ID or canvas rendering
 const canvas = document.querySelector('#scene-container');
 canvas.appendChild(renderer.domElement);
+
+/////////////CREATING CLASSES///////////////////
+
+//create new box class that inherits all properties from THREE.Mesh
+class Box extends THREE.Mesh{
+    constructor({width, height, depth, color = '#00ff00', velocity = {x: 0, y: 0, z: 0}, pos = {x: 0, y: 0, z: 0}})
+    {
+        //calls THREE.Mesh constructor, creating default green box
+        super(
+            new THREE.BoxGeometry(width, height, depth), 
+            new THREE.MeshStandardMaterial({color:color})
+        ); 
+
+        this.width = width;
+        this.height = height; //define height of box
+        this.depth = depth;
+
+        this.position.set(pos.x, pos.y, pos.z);
+
+        this.bottomPosition = this.position.y - this.height / 2;
+        this.topPosition = this.position.y + this.height / 2;
+
+        this.velocity = velocity;
+        
+    }
+
+    update(ground)
+    {
+        this.bottomPosition = this.position.y - this.height / 2;
+        this.topPosition = this.position.y + this.height / 2;
+        console.log(this.bottomPosition);
+
+        //add gravity
+        this.position.y += this.velocity.y;
+        //check for collsion with floor
+        if (this.bottomPosition <= ground.topPosition){
+            this.velocity.y = 0
+        }
+    }
+}
 
 //////////////DEFINING FUNCTIONS///////////////////
 
@@ -33,6 +73,10 @@ const createTree=()=>{
     //make leaves relevant to trunk
     leaves.position.y = trunk.position.y + 5;
     leaves2.position.y = trunk.position.y + 8;
+    //set meshes to case shadow
+    trunk.castShadow = true;
+    leaves.castShadow = true;
+    leaves2.castShadow = true;
     //group meshes together
     let treeGroup = new THREE.Group();
     treeGroup.add(trunk);
@@ -44,6 +88,14 @@ const createTree=()=>{
 //function to animate geometry
 function animate() {
    renderer.render(scene, camera);
+
+   //check positio of player for collisions
+   player.update(ground);
+
+   //adding gravity to player
+
+
+   //player.position.y += -0.01;
 }
 
 
@@ -58,6 +110,7 @@ const onWindowResize=()=>{
 
 //set up scene
 window.addEventListener('resize', onWindowResize);
+camera.position.y = 3;
 camera.position.z = 20; //move to position (0,0,10 so torus is in view)
 
 //set up controls
@@ -71,11 +124,34 @@ controls.update();
 //       scene.background = skyboxTexture;
 //     });
 
-
-
 // White directional light at half intensity shining from the top.
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+directionalLight.castShadow = true;
 scene.add( directionalLight );
 
-createTree();
+//create ground
+const ground = new Box({
+    width: 20,
+    height: 0.5,
+    depth: 20,
+    color: 0xF0E8DC,
+    pos: {x: 0, y: -3, z: 0}
+});
 
+ground.receiveShadow = true;
+console.log(ground.height);
+
+scene.add(ground);
+
+//create player
+const player = new Box({
+    width: 1, 
+    height: 2,
+    depth: 1,
+    color: 0xff00ff,
+    velocity: {x: 0, y: -0.01, z:0},
+    pos: {x: 0, y: 3, z: 0}
+});
+
+player.castShadow = true;
+scene.add(player);
