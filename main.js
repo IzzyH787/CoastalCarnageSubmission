@@ -37,20 +37,34 @@ class Box extends THREE.Mesh{
         this.topPosition = this.position.y + this.height / 2;
 
         this.velocity = velocity;
+        this.gravity = -0.002;
         
     }
 
     update(ground)
     {
+        //get top and bottom position so can check for collisions
         this.bottomPosition = this.position.y - this.height / 2;
         this.topPosition = this.position.y + this.height / 2;
-        console.log(this.bottomPosition);
 
-        //add gravity
-        this.position.y += this.velocity.y;
-        //check for collsion with floor
-        if (this.bottomPosition <= ground.topPosition){
-            this.velocity.y = 0
+        //apply movement
+        this.position.x += this.velocity.x;
+        this.position.z += this.velocity.z;
+        this.applyGravity();
+        
+        
+    }
+    applyGravity(){
+        this.velocity.y += this.gravity; //add gravity
+        //check for collsion with floor (1 frame ahead)
+        if (this.bottomPosition + this.velocity.y <= ground.topPosition){
+            //hitting floor
+            this.velocity.y *= 0.8; //reduce velocity to create friciton between bounces, reduce bounce height
+            this.velocity.y = -this.velocity.y; //reverse velocity for bounce effect
+        }
+        else{
+            //if not hitting floor
+            this.position.y += this.velocity.y
         }
     }
 }
@@ -89,7 +103,22 @@ const createTree=()=>{
 function animate() {
    renderer.render(scene, camera);
 
-   //check positio of player for collisions
+   //movement code
+   player.velocity.x = 0 //stop player at start of frame
+   player.velocity.z = 0 //stop player at start of frame
+   if (keys.a.pressed){
+    player.velocity.x = -0.01; //move left
+   }
+   else if (keys.d.pressed){
+    player.velocity.x = 0.01; //move right
+   }
+   else if (keys.w.pressed){
+    player.velocity.z = -0.01; //move right
+   }
+   else if (keys.s.pressed){
+    player.velocity.z = 0.01; //move right
+   }
+   //check position of player for collisions
    player.update(ground);
 
    //adding gravity to player
@@ -155,3 +184,51 @@ const player = new Box({
 
 player.castShadow = true;
 scene.add(player);
+
+const keys = {
+    a: {
+        pressed: false
+    },
+    d: {
+        pressed: false
+    },
+    w: {
+        pressed: false
+    },
+    s: {
+        pressed: false
+    }
+    
+}
+window.addEventListener('keydown', (event) => {
+    switch(event.code){
+        case 'KeyW':
+            keys.w.pressed = true;
+            break;
+        case 'KeyA':
+            keys.a.pressed = true;
+            break;
+        case 'KeyS':
+            keys.s.pressed = true;
+            break;
+        case 'KeyD':
+            keys.d.pressed = true;
+            break;
+    }
+})
+window.addEventListener('keyup', (event) => {
+    switch(event.code){
+        case 'KeyW':
+            keys.w.pressed = false;
+            break;
+        case 'KeyA':
+            keys.a.pressed = false;
+            break;
+        case 'KeyS':
+            keys.s.pressed = false;
+            bwreak;
+        case 'KeyD':
+            keys.d.pressed = false;
+            break;
+    }
+})
