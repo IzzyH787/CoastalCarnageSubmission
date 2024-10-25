@@ -129,6 +129,21 @@ let frames = 0;
 let spawnRate = 500;
 let speed = 0.05;
 function animate() {
+
+    /////////////WEEK 5 LAB//////////////////////
+    
+    cubeGroup.rotation.y += 0.01;
+    combineGroup.rotation.y += 0.005;
+
+
+    ///////////////////////////////////////////////////
+
+
+
+
+
+
+
     //const animationId = requestAnimationFrame(animate);
 
     renderer.render(scene, camera);
@@ -238,7 +253,39 @@ scene.add(player);
 const enemies = []; //create array to store enemies
 
 
-//input stuff
+
+
+/////////////////////WEEK 5 LAB///////////////////////
+
+//create capsule
+const capsule = new THREE.Mesh(new THREE.CapsuleGeometry( 1, 1, 4, 8 ), new THREE.MeshBasicMaterial({color: 0x0000ff}));
+
+//creating cube group
+const gCube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
+const rCube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({color: 0xff0000}));
+gCube.position.x = 3;
+
+//group cubes
+let cubeGroup = new THREE.Group();
+cubeGroup.add(gCube);
+cubeGroup.add(rCube)
+//scene.add(cubeGroup);
+cubeGroup.position.x = 5;
+
+//group capsule to cube group
+let combineGroup = new THREE.Group();
+combineGroup.add(capsule);
+combineGroup.add(cubeGroup);
+combineGroup.position.y = 10;
+scene.add(combineGroup);
+
+
+
+
+
+
+
+///////////////INPUT STUFF///////////////////
 const keys = {
     a: {
         pressed: false
