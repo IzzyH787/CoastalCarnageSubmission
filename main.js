@@ -357,31 +357,35 @@ if (player.position.y > 1 && !change){
 
 //GLTF
 
-const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
-///////GLTF loader
-// Load a glTF resource
-let helicopter;
-gltfloader.load(
-    'low_poly_helicopter.glb',  // called when the resource is loaded
- 
-    (gltf) => {
-        helicopter = gltf.scene;
-        helicopter.scale.set(0.3, 0.3, 0.3);
-        scene.add(helicopter); //add GLTF to the scene
- 
-    },
-    // called when loading is in progresses
- 
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
- 
-    },
-    // called when loading has errors
- 
-    (error) => {
-        console.log('An error happened' + error);
-    }
-);
+
+const addModel=(fileName, scale)=>{
+    const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
+    // Load a glTF resource
+    let model;
+    gltfloader.load(
+        fileName,  // called when the resource is loaded
+    
+        (gltf) => {
+            model = gltf.scene;
+            model.scale.set(scale, scale, scale);
+            scene.add(model); //add GLTF to the scene
+    
+        },
+        // called when loading is in progresses
+    
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    
+        },
+        // called when loading has errors
+    
+        (error) => {
+            console.log('An error happened' + error);
+        }
+    );
+}
+addModel('low_poly_helicopter.glb', 0.3);
+
 
 ///////////////INPUT STUFF///////////////////
 const keys = {
