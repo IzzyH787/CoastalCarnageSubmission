@@ -282,6 +282,20 @@ combineGroup.add(cubeGroup);
 combineGroup.position.y = 10;
 scene.add(combineGroup);
 
+//function add plane
+
+const addPlane=(x, y, w, h, material)=>{
+    //initialise plane
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 2), new THREE.MeshBasicMaterial(material));
+    plane.position.x = x;
+    plane.position.y = y;
+    plane.rotation.x = -Math.PI/2;
+    scene.add(plane)
+}
+const planeTexture = new THREE.TextureLoader().load('resources/images/goldpattern.png');
+const planeMaterialProperties = {map: planeTexture, side: THREE.DoubleSide, transparent: true};
+addPlane(0,-3.6, 30, 30, planeMaterialProperties);
+
 
 
 
