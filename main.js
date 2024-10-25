@@ -96,6 +96,34 @@ const boxCollision=({box1, box2})=>{
     
     return (xCollision && yCollision && zCollision)
 }
+
+const movePlayer=()=>{
+    //movement code
+    player.velocity.x = 0 //stop player at start of frame
+    player.velocity.z = 0 //stop player at start of frame
+
+    if (keys.a.pressed){player.velocity.x = -speed;} //move left
+    else if (keys.d.pressed){player.velocity.x = speed; } //move right
+
+    //separate if for axis allows them to be true at same time
+    if (keys.w.pressed){player.velocity.z = -speed;} //move forward
+    else if (keys.s.pressed){player.velocity.z =speed; } //move backward
+}
+
+const createEnemy=()=>{
+    const newEnemy = new Box({
+        width: 1, 
+        height: 1,
+        depth: 1,
+        color: 0xffff00,
+        velocity: {x: 0, y: -0.01, z:0.005},
+        //Math.random() generates random value 0-1
+        pos: {x: Math.random() - 0.5 * 20, y: 3, z: -10}
+    });
+    newEnemy.castShadow = true;
+    scene.add(newEnemy); //add to scene
+    enemies.push(newEnemy); //add to enemy array
+}
 //create a tree
 const createTree=()=>{
     //create trunk
@@ -135,57 +163,30 @@ function animate() {
     cubeGroup.rotation.y += 0.01;
     combineGroup.rotation.y += 0.005;
 
-
     ///////////////////////////////////////////////////
-
-
-
-
-
-
 
     //const animationId = requestAnimationFrame(animate);
 
-    renderer.render(scene, camera);
-
-    //movement code
-    player.velocity.x = 0 //stop player at start of frame
-    player.velocity.z = 0 //stop player at start of frame
-
-    if (keys.a.pressed){player.velocity.x = -speed;} //move left
-    else if (keys.d.pressed){player.velocity.x = speed; } //move right
-    //sepeare if for axis allows them to be true at same time
-    if (keys.w.pressed){player.velocity.z = -speed;} //move forward
-    else if (keys.s.pressed){player.velocity.z =speed; } //move backward
-
+    movePlayer(); //check if player moves this frame
 
     //check position of player for collisions
     player.update(ground);
     //update enemy
     enemies.forEach((enemy) => {
     enemy.update(ground);
+
+    //check for collision between player and enemy
     if (boxCollision({box1: player, box2: enemy})){
         console.log("boom");
         //cancelAnimationFrame(animationId);
     }
     })
 
+    //if enough frames passed since last spawn
     if (frames % spawnRate == 0){
-        //create an enemy
-        const newEnemy = new Box({
-            width: 1, 
-            height: 1,
-            depth: 1,
-            color: 0xffff00,
-            velocity: {x: 0, y: -0.01, z:0.005},
-            //Math.random() generates random value 0-1
-            pos: {x: Math.random() - 0.5 * 20, y: 3, z: -10}
-        });
-        newEnemy.castShadow = true;
-        scene.add(newEnemy); //add to scene
-        enemies.push(newEnemy); //add to enemy array
+        createEnemy();
     }
-
+    renderer.render(scene, camera); //render scene
     frames++; //increment frame number
 }
 
@@ -204,20 +205,6 @@ window.addEventListener('resize', onWindowResize);
 camera.position.y = 3;
 camera.position.z = 20; //move to position (0,0,10 so torus is in view)
 
-
-
-
-
-
-
-
-
-
-// const skyboxTexture = loader.load('resources/images/skydome.hdr', () => {
-//       texture.mapping = THREE.EquirectangularReflectionMapping;
-//       texture.colorSpace = THREE.SRGBColorSpace;
-//       scene.background = skyboxTexture;
-//     });
 
 // White directional light at half intensity shining from the top.
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -296,9 +283,15 @@ const addPlane=(x, y, w, h, material)=>{
     plane.rotation.x = -Math.PI/2;
     scene.add(plane)
 }
-const planeTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
-const planeMaterialProperties = {map: planeTexture, side: THREE.DoubleSide, transparent: true};
-addPlane(0,-3.6, 30, 30, planeMaterialProperties);
+const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
+const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
+addPlane(0,-3.6, 100, 100, waterPlaneMaterialProperties);
+
+
+const sandTexture = new THREE.TextureLoader().load('resources/images/sand.jpg');
+const sandPlaneMaterialProperties = {map: sandTexture, side: THREE.DoubleSide, transparent: true};
+addPlane(0,ground.topPosition + 0.001, 20, 20, sandPlaneMaterialProperties);
+
 
 //create skybox
 
@@ -307,7 +300,7 @@ const createSkybox=()=>{
     
     const loader = new THREE.TextureLoader();
     //load texture from file
-    loader.load('resources/images/galaxy.jpg', function(texture){
+    loader.load('resources/images/cartoon-sky.jpg', function(texture){
         const sphere = new THREE.SphereGeometry(100, 60, 40); //sphere geometry for skydome
         const sphereMaterial = new THREE.MeshBasicMaterial({map:texture, side: THREE.DoubleSide});
         backgroundMesh = new THREE.Mesh(sphere, sphereMaterial);
@@ -330,6 +323,25 @@ const createOrbitControls=()=>{
 
 createOrbitControls();
 
+
+//movement form UI buttons
+const moveUp =()=>{
+    player.position.z -= 3;
+}
+const moveDown=()=>{
+    player.position.z += 3;
+}
+const moveLeft =()=>{
+    player.position.x -= 3;
+}
+const moveRight=()=>{
+    player.position.x += 3;
+}
+//get buttons by ID
+document.getElementById("up-button").addEventListener("click", moveUp);
+document.getElementById("down-button").addEventListener("click", moveDown);
+document.getElementById("left-button").addEventListener("click", moveLeft);
+document.getElementById("right-button").addEventListener("click", moveRight);
 
 
 
