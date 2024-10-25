@@ -204,10 +204,14 @@ window.addEventListener('resize', onWindowResize);
 camera.position.y = 3;
 camera.position.z = 20; //move to position (0,0,10 so torus is in view)
 
-//set up controls
-const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 0, 0);
-controls.update();
+
+
+
+
+
+
+
+
 
 // const skyboxTexture = loader.load('resources/images/skydome.hdr', () => {
 //       texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -292,12 +296,39 @@ const addPlane=(x, y, w, h, material)=>{
     plane.rotation.x = -Math.PI/2;
     scene.add(plane)
 }
-const planeTexture = new THREE.TextureLoader().load('resources/images/goldpattern.png');
+const planeTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
 const planeMaterialProperties = {map: planeTexture, side: THREE.DoubleSide, transparent: true};
 addPlane(0,-3.6, 30, 30, planeMaterialProperties);
 
+//create skybox
+
+const createSkybox=()=>{
+    let backgroundMesh; //variable for sphere mesh
+    
+    const loader = new THREE.TextureLoader();
+    //load texture from file
+    loader.load('resources/images/galaxy.jpg', function(texture){
+        const sphere = new THREE.SphereGeometry(100, 60, 40); //sphere geometry for skydome
+        const sphereMaterial = new THREE.MeshBasicMaterial({map:texture, side: THREE.DoubleSide});
+        backgroundMesh = new THREE.Mesh(sphere, sphereMaterial);
+        scene.add(backgroundMesh);
+    }); 
+    
+}
+createSkybox();
 
 
+//create orbit controls
+
+let controls;
+const createOrbitControls=()=>{
+    controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 0, 0);
+    controls.update();
+}
+
+
+createOrbitControls();
 
 
 

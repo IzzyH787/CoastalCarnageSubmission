@@ -7,6 +7,11 @@ https://www.copernicai.com/#prompt
 png file downloaded from:
 https://www.cleanpng.com/
 
+water image:
+https://www.vecteezy.com/vector-art/1844212-water-texture-top-view-background-vector-design-illustration
+
+sky image:
+https://www.freepik.com/free-vector/sky-background-video-conferencing_9444270.htm#fromView=keyword&page=1&position=4&uuid=1a2faa61-689d-4db5-bc00-3d727369d1c5
 
 Folder structure:
 img: contains all png and background .jpg
