@@ -1,5 +1,8 @@
 import * as THREE from 'three'; //import three.js
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
+ 
+
 //import Box from './box.js';
 
 ////////////SETTING UP SCENE/////////////
@@ -344,6 +347,41 @@ document.getElementById("left-button").addEventListener("click", moveLeft);
 document.getElementById("right-button").addEventListener("click", moveRight);
 
 
+let change = false;
+//change colour
+
+if (player.position.y > 1 && !change){
+    player.material.color.setHex(0xEC6E18);
+    change = true;
+}
+
+//GLTF
+
+const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
+///////GLTF loader
+// Load a glTF resource
+let helicopter;
+gltfloader.load(
+    'low_poly_helicopter.glb',  // called when the resource is loaded
+ 
+    (gltf) => {
+        helicopter = gltf.scene;
+        helicopter.scale.set(0.3, 0.3, 0.3);
+        scene.add(helicopter); //add GLTF to the scene
+ 
+    },
+    // called when loading is in progresses
+ 
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+ 
+    },
+    // called when loading has errors
+ 
+    (error) => {
+        console.log('An error happened' + error);
+    }
+);
 
 ///////////////INPUT STUFF///////////////////
 const keys = {
