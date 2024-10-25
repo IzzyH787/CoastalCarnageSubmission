@@ -6,11 +6,23 @@
         
 </head>
 <body>
+    <div class = "overlay-text">
+        <h1>My game</h1>
+        <div>Health:</div>
+        <div>Score: </div>
+        <button class = "btn" id = "up-button">UP</button>
+        <button class = "btn" id = "down-button">DOWN</button>
+        <button class = "btn" id = "left-button">LEFT</button>
+        <button class = "btn" id = "right-button">RIGHT</button>
+    </div>
+    <div id = "scene-container">
+        
+    </div>
+    
+
 
     <!--importing three.js-->
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
-
-    
 
     <script type="importmap">
     {
@@ -19,13 +31,12 @@
         "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
         }
     }
-    
     </script>
-
     <!--referencing/calling main.js script-->
-
     <script type="module" src="main.js"></script>
-    <div id = "scene-container"></div>
+
+
+    
 
 </body>
 

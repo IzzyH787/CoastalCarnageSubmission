@@ -257,6 +257,9 @@ const enemies = []; //create array to store enemies
 
 /////////////////////WEEK 5 LAB///////////////////////
 
+
+
+////////////CREATING GROUPS AND SUBGROUPS///////////////////
 //create capsule
 const capsule = new THREE.Mesh(new THREE.CapsuleGeometry( 1, 1, 4, 8 ), new THREE.MeshBasicMaterial({color: 0x0000ff}));
 

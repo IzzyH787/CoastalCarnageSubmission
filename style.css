@@ -1,0 +1,7 @@
+.overlay-text{
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+  
+    color: black;
+}
