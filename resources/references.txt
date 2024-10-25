@@ -1,0 +1,13 @@
+3D model donwlowned from 
+https://skfb.ly/6AOHw
+
+360 pano background generated from:
+https://www.copernicai.com/#prompt
+
+png file downloaded from:
+https://www.cleanpng.com/
+
+
+Folder structure:
+img: contains all png and background .jpg
+3dmodel: contains a glb file

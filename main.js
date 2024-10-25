@@ -1,5 +1,6 @@
 import * as THREE from 'three'; //import three.js
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+//import Box from './box.js';
 
 ////////////SETTING UP SCENE/////////////
 const scene = new THREE.Scene(); //create scene
@@ -64,15 +65,6 @@ class Box extends THREE.Mesh{
         this.position.x += this.velocity.x;
         this.position.z += this.velocity.z;
 
-        // //detect collision on x  and z axis 
-        // const xCollision = ( (this.rightPosition >= ground.leftPosition) && (this.leftPosition <= ground.rightPosition) );
-        // const yCollision = ( (this.bottomPosition <= ground.topPosition) && (this.topPosition >= ground.bottomPosition) );
-        // const zCollision = ( (this.frontPosition >= ground.backPosition) && (this.backPosition <= ground.frontPosition) );
-        
-        // if (xCollision && yCollision && zCollision){
-        //     console.log("Collision");
-        // }
-
         this.applyGravity(ground);
         
         
@@ -135,6 +127,7 @@ const createTree=()=>{
 //function to animate geometry
 let frames = 0;
 let spawnRate = 500;
+let speed = 0.05;
 function animate() {
     //const animationId = requestAnimationFrame(animate);
 
@@ -144,11 +137,11 @@ function animate() {
     player.velocity.x = 0 //stop player at start of frame
     player.velocity.z = 0 //stop player at start of frame
 
-    if (keys.a.pressed){player.velocity.x = -0.01;} //move left
-    else if (keys.d.pressed){player.velocity.x = 0.01; } //move right
+    if (keys.a.pressed){player.velocity.x = -speed;} //move left
+    else if (keys.d.pressed){player.velocity.x = speed; } //move right
     //sepeare if for axis allows them to be true at same time
-    if (keys.w.pressed){player.velocity.z = -0.01;} //move forward
-    else if (keys.s.pressed){player.velocity.z = 0.01; } //move backward
+    if (keys.w.pressed){player.velocity.z = -speed;} //move forward
+    else if (keys.s.pressed){player.velocity.z =speed; } //move backward
 
 
     //check position of player for collisions
@@ -276,7 +269,12 @@ window.addEventListener('keydown', (event) => {
             keys.d.pressed = true;
             break;
         case 'Space':
-            player.velocity.y = 0.1;
+            console.log (player.velocity.y);
+            if (player.velocity.y < 0.01 && player.velocity.y > -0.01){
+                console.log("jump");
+                player.velocity.y = 0.1;
+            }
+            
             break;     
     }
 })
