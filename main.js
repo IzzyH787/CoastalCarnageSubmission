@@ -168,6 +168,20 @@ function animate() {
 
     ///////////////////////////////////////////////////
 
+
+
+
+    /////////////WEEK 6////////////////////////////
+    
+    //UPDATE ANIMATION MIXER FOR HELICOPTER
+    let delta = clock.getDelta();
+    //check if mixer exists
+    if (mixer){
+        mixer.update(delta);
+    }
+
+    ///////////////////////////////////////////
+
     //const animationId = requestAnimationFrame(animate);
 
     movePlayer(); //check if player moves this frame
@@ -357,6 +371,8 @@ if (player.position.y > 1 && !change){
 
 //GLTF
 
+let mixer; //define animation mixer
+let clock = new THREE.Clock();
 
 const addModel=(fileName, scale)=>{
     const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
@@ -369,6 +385,14 @@ const addModel=(fileName, scale)=>{
             model = gltf.scene;
             model.scale.set(scale, scale, scale);
             scene.add(model); //add GLTF to the scene
+
+            /////////////////WEEK 6////////////////
+            //play animation
+            mixer = new THREE.AnimationMixer(model);
+            gltf.animations.forEach((clip) => {
+                mixer.clipAction(clip).play();
+        });
+            //////////////////////////////////////
     
         },
         // called when loading is in progresses
@@ -387,6 +411,18 @@ const addModel=(fileName, scale)=>{
 
 }
 addModel('low_poly_helicopter.glb', 0.3);
+
+
+
+
+
+
+////////////////WEEK 6//////////////////////////////
+
+
+
+
+
 
 
 ///////////////INPUT STUFF///////////////////
