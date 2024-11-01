@@ -6,3 +6,37 @@
     color: #EC6E18;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
+
+
+/*Basic web pages*/
+body{
+    background-color: #bddff7;
+    color: #EC6E18;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+h1{
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    padding: 0 50px;
+    height: 80px;
+    background-color: #9ed1f5;
+  }
+
+  nav a{
+    text-decoration: none;
+    color: #EC6E18;
+    font-weight: bold;
+  }
+
+  .input-section{
+    align-items: center;
+    width: 100%;
+    margin: auto;
+  }

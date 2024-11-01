@@ -373,6 +373,7 @@ if (player.position.y > 1 && !change){
 
 let mixer; //define animation mixer
 let clock = new THREE.Clock();
+let helicopter;
 
 const addModel=(fileName, scale)=>{
     const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
