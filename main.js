@@ -1,7 +1,7 @@
 import * as THREE from 'three'; //import three.js
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
- 
+//import {Box} from './box.js';
 
 //import Box from './box.js';
 
@@ -383,6 +383,8 @@ const addModel=(fileName, scale)=>{
             console.log('An error happened' + error);
         }
     );
+    //model.position.set(0,4,0);
+
 }
 addModel('low_poly_helicopter.glb', 0.3);
 

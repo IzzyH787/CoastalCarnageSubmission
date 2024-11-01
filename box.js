@@ -1,7 +1,7 @@
 import * as THREE from 'three'; //import three.js
 
 //create new box class that inherits all properties from THREE.Mesh
-class Box extends THREE.Mesh{
+export class Box extends THREE.Mesh{
     constructor({width, height, depth, color = '#00ff00', velocity = {x: 0, y: 0, z: 0}, pos = {x: 0, y: 0, z: 0}})
     {
         //calls THREE.Mesh constructor, creating default green box
