@@ -197,9 +197,7 @@ function animate() {
     var delta = clock.getDelta();
     //chickenMixer.clipAction(chickenAnimations[chickenState]).play();
     //check if mixer exists
-    if (chickenMixer){
-        chickenMixer.update(delta);
-    }
+    if (chickenMixer) chickenMixer.update(delta);
 
     ///////////////////////////////////////////
 
@@ -419,11 +417,11 @@ const addModel=(fileName, scale, model, animationsArray, mixer)=>{
 
             /////////////////WEEK 6////////////////
             //play animation
-            mixer = new THREE.AnimationMixer(model);
+            chickenMixer = new THREE.AnimationMixer(model);
             gltf.animations.forEach((clip) => {
                 //mixer.clipAction(clip).play();
-                animationsArray.push(mixer.clipAction(clip));
-                console.log(clip);
+                animationsArray.push(chickenMixer.clipAction(clip));
+                //console.log(clip);
         });
             //////////////////////////////////////
     
@@ -477,13 +475,15 @@ const displayTwerk=()=>{
 }
 
 
-document.getElementById("peck-animation").addEventListener("click", displayPeck);
-document.getElementById("walk-animation").addEventListener("click", displayWalk);
-document.getElementById("twerk-animation").addEventListener("click", displayTwerk);
+document.getElementById("action1").addEventListener("click", displayPeck);
+document.getElementById("action2").addEventListener("click", displayWalk);
+document.getElementById("action3").addEventListener("click", displayTwerk);
 
 const playAction=(index)=>{
     const action = chickenAnimations[index];
+    console.log('play action');
     if (chickenMixer != null){
+        console.log('mixer exists');
         chickenMixer.stopAllAction();
 
         action.reset();
