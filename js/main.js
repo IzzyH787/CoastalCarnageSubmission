@@ -3,7 +3,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
-import { createTree, addPlane, createSkybox, waterPlane, waterGeometry, waterVertexCount } from './worldset.js';
+import { createTree, addPlane, createSkybox, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision} from './box.js';
 
 
@@ -47,13 +47,14 @@ const animateWaterPlane = (geometry, count) => {
         const x = geometry.attributes.position.getX(i); //get x position of vertex
         const y = geometry.attributes.position.getY(i); //get x position of vertex
 
-        const xsin = Math.sin (x + frames/60); //find sin value of vertice's x pos and frames/60
-        const ycos = Math.cos(y + frames/60);
+        const xsin = Math.sin (x + frames/120); //find sin value of vertice's x pos and frames/60
+        const ycos = Math.cos(y + frames/120);
         
         geometry.attributes.position.setZ(i, xsin + ycos); //set z pos of vertex
     }
     geometry.computeVertexNormals(); //recalculate vertex normals so shadows look correct
     geometry.attributes.position.needsUpdate = true; //update position of vertices
+    waterTexture.offset.y += 0.0005;
 }
 
 const movePlayer=()=>{
@@ -67,6 +68,24 @@ const movePlayer=()=>{
     //separate if for axis allows them to be true at same time
     if (keys.w.pressed){player.velocity.z = -speed;} //move forward
     else if (keys.s.pressed){player.velocity.z =speed; } //move backward
+
+    if (boxCollision({box1: player, box2: wallLeft})){
+        player.velocity.x = 0;
+        player.position.x += speed;
+        player.velocity.z = 0;
+    }
+
+    if (boxCollision({box1: player, box2: wallRight})){
+        player.velocity.x = 0;
+        player.position.x -= speed;
+        player.velocity.z = 0;
+    }
+
+    if (boxCollision({box1: player, box2: wallBack})){
+        player.velocity.x = 0;
+        player.position.z += speed;
+        player.velocity.z = 0;
+    }
 }
 
 const createEnemy=()=>{
@@ -147,13 +166,40 @@ camera.position.set(0,3,20); //offset camera so doesn't spawn in model
 scene.add(new THREE.AmbientLight(0xffffff, 0.5)); //add ambient light to scene
 
 //create ground
-const ground = new Box({width: 500, height: 0.5, depth: 100, color: 0xF0E8DC, pos: {x: 0, y: -3, z: 0} });
+const ground = new Box({width: 200, height: 0.5, depth: 150, color: 0xF0E8DC, pos: {x: 0, y: -3, z: -30} });
 ground.receiveShadow = true;
 scene.add(ground);
 
 const sandTexture = new THREE.TextureLoader().load('resources/images/sand.jpg');
-const sandPlaneMaterialProperties = {map: sandTexture, side: THREE.DoubleSide, transparent: true};
-addPlane(0,ground.topPosition + 0.01, 500, 100, sandPlaneMaterialProperties, scene);
+
+sandTexture.wrapS = THREE.RepeatWrapping;
+sandTexture.wrapT = THREE.RepeatWrapping;
+sandTexture.repeat.set( 2, 2 );
+
+const sandPlaneMaterialProperties = {map: sandTexture, side: THREE.DoubleSide, transparent: true, repeat: 10};
+const sandPlane = addPlane(0,ground.topPosition + 0.01, 200, 150, sandPlaneMaterialProperties, scene);
+sandPlane.position.z = -30;
+
+
+//add water plane
+scene.add(waterPlane);
+
+//create boundary walls
+const wallLeft = new Box({width: 10, height: 10, depth: 120, color: 0xccccc, pos: {x: -80, y: 0, z:-10}});
+const wallRight = new Box({width: 10, height: 10, depth: 120, color: 0xccccc, pos: {x: 80, y: 0, z:-10}});
+const wallBack = new Box({width: 200, height: 10, depth: 10, color: 0xccccc, pos: {x: 0, y: 0, z:-70}});
+let walls = new THREE.Group();
+walls.add(wallLeft);
+walls.add(wallRight);
+walls.add(wallBack);
+scene.add(walls);
+
+createTree(scene, 10, 0, 5);
+
+
+
+
+
 
 //create player
 const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00f, velocity: {x: 0, y: -0.01, z:0}, pos: {x: 0, y: 3, z: 0}});
@@ -281,63 +327,7 @@ const playAction=(index)=>{
     }
 }
 
-/////////////////////WEEK 7//////////////////
 
-const createManyObjects=()=>{
-    const geometry = new THREE.SphereGeometry();
-    for (let count = 0; count < 2000; count++){
-        const material2 = new THREE.MeshPhongMaterial({
-            color: 0x2eabef
-        });
-        const object = new THREE.Mesh(geometry, material2);
-        object.position.x = Math.random() * 50 - 25;
-        object.position.y = Math.random() * 50 - 25;
-        object.position.z = Math.random() * 50 - 25;
-        object.scale.set(0.5, 0.5, 0.5);
-        object.material.color.setHex(Math.random() * 0xffffff);
-        scene.add(object);
-
-    }
-}
-
-//createManyObjects();
-
-const createPointGeometry=()=>{
-    const pointGeometry = new THREE.SphereGeometry( 15, 32, 16);
-
-    const newMaterial = new THREE.PointsMaterial({color:'red', size:0.5});
-    let pointObject = new THREE.Points(pointGeometry, newMaterial);
-    scene.add(pointObject);
-    let mesh2 = pointObject.clone();
-    scene.add(mesh2);
-}
-
-//createPointGeometry();
-
-
-
-//creating moving water plane
-
-
-// const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
-// const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
-// const waterMaterial = new THREE.MeshBasicMaterial(waterPlaneMaterialProperties)
-// //waterMaterial.wrapS = THREE.RepeatWrapping;
-// //waterMaterial.wrapT = THREE.RepeatWrapping;
-
-// const waterWidth = 100;
-// const waterLength = 100;
-// const waterGeometry = new THREE.PlaneGeometry(waterWidth, waterWidth, 10, 10);
-// const waterPlane = new THREE.Mesh(waterGeometry, waterMaterial);
-
-// const waterVertexCount = waterGeometry.attributes.position.count;
-// waterPlane.position.set(0, -4.5, 50);
-// waterPlane.rotation.x = Math.PI / 2;
-
-scene.add(waterPlane);
-
-
-createTree(scene, 10, 0, 5);
 
 
 

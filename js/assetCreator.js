@@ -45,6 +45,7 @@ export const addPlane=(x, y, w, h, material, scene)=>{
     plane.position.y = y;
     plane.rotation.x = -Math.PI/2;
     scene.add(plane)
+    return plane
 }
 
 export const createSkybox=(scene)=>{
@@ -93,11 +94,16 @@ export const createPointGeometry=(scene)=>{
 
 ///////////////////MAIN LOGIC////////////////
 
+
+//create water plane
 const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
+
+waterTexture.wrapS = THREE.RepeatWrapping;
+waterTexture.wrapT = THREE.RepeatWrapping;
+waterTexture.repeat.set( 2, 2 );
+
 const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
 const waterMaterial = new THREE.MeshBasicMaterial(waterPlaneMaterialProperties)
-//waterMaterial.wrapS = THREE.RepeatWrapping;
-//waterMaterial.wrapT = THREE.RepeatWrapping;
 
 const waterWidth = 100;
 const waterLength = 100;
@@ -112,4 +118,4 @@ waterPlane.rotation.x = Math.PI / 2;
 
 
 
-export {waterPlane, waterGeometry, waterVertexCount};
+export {waterPlane, waterGeometry, waterVertexCount, waterTexture};
