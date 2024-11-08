@@ -209,7 +209,13 @@ function animate() {
     stats.update();
 
 
-    
+
+    /////////////////////////////////////////
+
+
+
+
+
     //const animationId = requestAnimationFrame(animate);
 
     movePlayer(); //check if player moves this frame
@@ -485,6 +491,45 @@ const playAction=(index)=>{
         action.play();
     }
 }
+
+/////////////////////WEEK 7//////////////////
+
+const createManyObjects=()=>{
+    const geometry = new THREE.SphereGeometry();
+    for (let count = 0; count < 2000; count++){
+        const material2 = new THREE.MeshPhongMaterial({
+            color: 0x2eabef
+        });
+        const object = new THREE.Mesh(geometry, material2);
+        object.position.x = Math.random() * 50 - 25;
+        object.position.y = Math.random() * 50 - 25;
+        object.position.z = Math.random() * 50 - 25;
+        object.scale.set(0.5, 0.5, 0.5);
+        object.material.color.setHex(Math.random() * 0xffffff);
+        scene.add(object);
+
+    }
+}
+
+//createManyObjects();
+
+const createPointGeometry=()=>{
+    const pointGeometry = new THREE.SphereGeometry( 15, 32, 16);
+
+    const newMaterial = new THREE.PointsMaterial({color:'red', size:0.5});
+    let pointObject = new THREE.Points(pointGeometry, newMaterial);
+    scene.add(pointObject);
+    let mesh2 = pointObject.clone();
+    scene.add(mesh2);
+}
+
+createPointGeometry();
+
+
+
+
+
+
 
 
 ///////////////INPUT STUFF///////////////////
