@@ -197,7 +197,7 @@ function animate() {
     var delta = clock.getDelta();
     //chickenMixer.clipAction(chickenAnimations[chickenState]).play();
     //check if mixer exists
-    if (chickenMixer) chickenMixer.update(delta);
+    if (mixer) mixer.update(delta);
 
     ///////////////////////////////////////////
 
@@ -206,6 +206,22 @@ function animate() {
     /////////////////WEEK 7//////////////////
     stats.update();
 
+    //animating water plane
+
+    //iterate through vertices on plane
+    for (let i = 0; i < waterVertexCount; i++){
+        const x = waterGeometry.attributes.position.getX(i); //get x position of vertex
+        const y = waterGeometry.attributes.position.getY(i); //get x position of vertex
+
+        const xsin = Math.sin (x + frames/60); //find sin value of vertice's x pos and frames/60
+        const ycos = Math.cos(y + frames/60);
+        
+        waterGeometry.attributes.position.setZ(i, xsin + ycos); //set z pos of vertex
+    }
+    waterGeometry.computeVertexNormals(); //recalculate vertex normals so shadows look correct
+    waterGeometry.attributes.position.needsUpdate = true; //update position of vertices
+
+    //waterMaterial.map.offset.x += 0.001;
 
 
     /////////////////////////////////////////
@@ -332,9 +348,9 @@ const addPlane=(x, y, w, h, material)=>{
     plane.rotation.x = -Math.PI/2;
     scene.add(plane)
 }
-const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
-const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
-addPlane(0,-3.6, 100, 100, waterPlaneMaterialProperties);
+// const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
+// const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
+// addPlane(0,-3.6, 100, 100, waterPlaneMaterialProperties);
 
 
 const sandTexture = new THREE.TextureLoader().load('resources/images/sand.jpg');
@@ -376,6 +392,7 @@ createOrbitControls();
 //movement form UI buttons
 const moveUp =()=>{
     player.position.z -= 3;
+    chicken.position.z -= 3;
 }
 const moveDown=()=>{
     player.position.z += 3;
@@ -404,7 +421,7 @@ if (player.position.y > 1 && !change){
 //GLTF
 
 
-const addModel=(fileName, scale, model, animationsArray, mixer)=>{
+const addModel=(fileName, scale, model, animationsArray)=>{
     const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
     // Load a glTF resource
     gltfloader.load(
@@ -417,10 +434,10 @@ const addModel=(fileName, scale, model, animationsArray, mixer)=>{
 
             /////////////////WEEK 6////////////////
             //play animation
-            chickenMixer = new THREE.AnimationMixer(model);
+            mixer = new THREE.AnimationMixer(model);
             gltf.animations.forEach((clip) => {
                 //mixer.clipAction(clip).play();
-                animationsArray.push(chickenMixer.clipAction(clip));
+                animationsArray.push(mixer.clipAction(clip));
                 //console.log(clip);
         });
             //////////////////////////////////////
@@ -451,11 +468,11 @@ const addModel=(fileName, scale, model, animationsArray, mixer)=>{
 
 ////////////////WEEK 6//////////////////////////////
 let chicken; //store gltf model
-let chickenMixer;
+let mixer;
 let chickenAnimations = []; //store chicken model's animations
 let chickenState;
 const clock = new THREE.Clock();
-addModel('chicken.gltf', 0.5, chicken, chickenAnimations, chickenMixer);
+addModel('chicken.gltf', 0.5, chicken, chickenAnimations);
 
 const displayPeck=()=>{
     console.log("Animation 0");
@@ -482,9 +499,9 @@ document.getElementById("action3").addEventListener("click", displayTwerk);
 const playAction=(index)=>{
     const action = chickenAnimations[index];
     console.log('play action');
-    if (chickenMixer != null){
+    if (mixer != null){
         console.log('mixer exists');
-        chickenMixer.stopAllAction();
+        mixer.stopAllAction();
 
         action.reset();
         action.fadeIn(0.5);
@@ -523,9 +540,24 @@ const createPointGeometry=()=>{
     scene.add(mesh2);
 }
 
-createPointGeometry();
+//createPointGeometry();
 
 
+
+//creating moving water plane
+const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg');
+const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
+const waterMaterial = new THREE.MeshBasicMaterial(waterPlaneMaterialProperties)
+//waterMaterial.wrapS = THREE.RepeatWrapping;
+//waterMaterial.wrapT = THREE.RepeatWrapping;
+
+const waterGeometry = new THREE.PlaneGeometry(100, 100, 10, 10);
+const waterPlane = new THREE.Mesh(waterGeometry, waterMaterial);
+
+const waterVertexCount = waterGeometry.attributes.position.count;
+waterPlane.position.y = -5;
+waterPlane.rotation.x = Math.PI / 2;
+scene.add(waterPlane);
 
 
 
