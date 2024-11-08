@@ -1,7 +1,7 @@
 import * as THREE from 'three'; //import three.js
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
-//import {Box} from './box.js';
+//import Box from './box.js';
 
 //import Box from './box.js';
 
@@ -22,6 +22,8 @@ canvas.appendChild(renderer.domElement);
 /////////////CREATING CLASSES///////////////////
 
 //create new box class that inherits all properties from THREE.Mesh
+
+
 class Box extends THREE.Mesh{
     constructor({width, height, depth, color = '#00ff00', velocity = {x: 0, y: 0, z: 0}, pos = {x: 0, y: 0, z: 0}})
     {
@@ -174,10 +176,11 @@ function animate() {
     /////////////WEEK 6////////////////////////////
     
     //UPDATE ANIMATION MIXER FOR HELICOPTER
-    let delta = clock.getDelta();
+    var delta = clock.getDelta();
+    //chickenMixer.clipAction(chickenAnimations[chickenState]).play();
     //check if mixer exists
-    if (mixer){
-        mixer.update(delta);
+    if (chickenMixer){
+        chickenMixer.update(delta);
     }
 
     ///////////////////////////////////////////
@@ -371,14 +374,10 @@ if (player.position.y > 1 && !change){
 
 //GLTF
 
-let mixer; //define animation mixer
-let clock = new THREE.Clock();
-let helicopter;
 
-const addModel=(fileName, scale)=>{
+const addModel=(fileName, scale, model, animationsArray, mixer)=>{
     const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
     // Load a glTF resource
-    let model;
     gltfloader.load(
         fileName,  // called when the resource is loaded
     
@@ -391,7 +390,9 @@ const addModel=(fileName, scale)=>{
             //play animation
             mixer = new THREE.AnimationMixer(model);
             gltf.animations.forEach((clip) => {
-                mixer.clipAction(clip).play();
+                //mixer.clipAction(clip).play();
+                animationsArray.push(mixer.clipAction(clip));
+                console.log(clip);
         });
             //////////////////////////////////////
     
@@ -411,19 +412,54 @@ const addModel=(fileName, scale)=>{
     //model.position.set(0,4,0);
 
 }
-addModel('low_poly_helicopter.glb', 0.3);
 
+//let helicopter;
+//addModel('low_poly_helicopter.glb', 0.3, helicopter);
 
 
 
 
 
 ////////////////WEEK 6//////////////////////////////
+let chicken; //store gltf model
+let chickenMixer;
+let chickenAnimations = []; //store chicken model's animations
+let chickenState;
+const clock = new THREE.Clock();
+addModel('chicken.gltf', 0.5, chicken, chickenAnimations, chickenMixer);
+
+const displayPeck=()=>{
+    console.log("Animation 0");
+    //chickenState = 0;
+    playAction(0);
+    //chickenMixer.clipAction(chickenAnimations[0]).play;
+}
+const displayWalk=()=>{
+    console.log("Animation 1");
+    //chickenState = 1;
+    playAction(1);
+}
+const displayTwerk=()=>{
+    console.log("Animation 2");
+    //chickenState = 2;
+    playAction(2);
+}
 
 
+document.getElementById("peck-animation").addEventListener("click", displayPeck);
+document.getElementById("walk-animation").addEventListener("click", displayWalk);
+document.getElementById("twerk-animation").addEventListener("click", displayTwerk);
 
+const playAction=(index)=>{
+    const action = chickenAnimations[index];
+    if (chickenMixer != null){
+        chickenMixer.stopAllAction();
 
-
+        action.reset();
+        action.fadeIn(0.5);
+        action.play();
+    }
+}
 
 
 ///////////////INPUT STUFF///////////////////
