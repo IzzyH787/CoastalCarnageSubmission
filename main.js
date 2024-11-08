@@ -1,6 +1,21 @@
 import * as THREE from 'three'; //import three.js
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
+import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
+
+
+///////////////WEEK 7////////////////////
+let stats;
+stats = new Stats();
+
+document.body.appendChild(stats.dom);
+
+/////////////////////////////////////
+
+
+
+
+
 //import Box from './box.js';
 
 //import Box from './box.js';
@@ -161,6 +176,9 @@ const createTree=()=>{
 let frames = 0;
 let spawnRate = 500;
 let speed = 0.05;
+
+
+
 function animate() {
 
     /////////////WEEK 5 LAB//////////////////////
@@ -185,6 +203,13 @@ function animate() {
 
     ///////////////////////////////////////////
 
+
+
+    /////////////////WEEK 7//////////////////
+    stats.update();
+
+
+    
     //const animationId = requestAnimationFrame(animate);
 
     movePlayer(); //check if player moves this frame
