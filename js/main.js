@@ -3,7 +3,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
-import { createTree, addPlane, createSkybox, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
+import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision} from './box.js';
 
 
@@ -39,6 +39,15 @@ let stats;
 stats = new Stats();
 document.body.appendChild(stats.dom);
 
+//////////////DECLARING VARIABLES///////////////
+let playerDrowned = false;
+let waterParticles;
+
+let playerHealth = 10;
+const playerMaxHealth = 10;
+let healthText = "Health: ";
+healthText = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
+document.getElementById("health-display").innerHTML = healthText;
 
 //////////////DEFINING FUNCTIONS///////////////////
 const animateWaterPlane = (geometry, count) => {
@@ -69,6 +78,7 @@ const movePlayer=()=>{
     if (keys.w.pressed){player.velocity.z = -speed;} //move forward
     else if (keys.s.pressed){player.velocity.z =speed; } //move backward
 
+    //check if player walks into wall
     if (boxCollision({box1: player, box2: wallLeft})){
         player.velocity.x = 0;
         player.position.x += speed;
@@ -85,6 +95,15 @@ const movePlayer=()=>{
         player.velocity.x = 0;
         player.position.z += speed;
         player.velocity.z = 0;
+    }
+    //check if player falls in water
+    if (player.position.y < ground.position.y && !playerDrowned){
+        waterParticles = createPointGeometry(scene, player.position.x, player.position.y, player.position.z, 2);
+        console.log('drowned');
+        playerDrowned = true;
+        playerHealth = 0;
+        healthText = "Health: "
+        document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
     }
 }
 
@@ -144,9 +163,12 @@ function animate() {
     if (frames % spawnRate == 0){
         createEnemy();
     }
-    
+
+
     renderer.render(scene, camera); //render scene
     frames++; //increment frame number
+
+
 }
 
 
@@ -194,7 +216,13 @@ walls.add(wallRight);
 walls.add(wallBack);
 scene.add(walls);
 
-createTree(scene, 10, 0, 5);
+//add trees to scene
+for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
+    const xPos = Math.random() * (80 - -80) - 80;
+    const zPos = Math.random() * (30 - -60) + (-60);
+    createTree(scene, xPos, 0, zPos);
+}
+
 
 
 

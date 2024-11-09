@@ -14,11 +14,13 @@ const textureLoader = new THREE.TextureLoader();
 export const createTree=(scene, x, y, z)=>{
     //create trunk
     const trunkTexture = textureLoader.load('resources/textures/trunkTexture.jpg'); //load texture from external file
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry( 2, 2, 5, 32 ), new THREE.MeshBasicMaterial({map: trunkTexture, })); //create trunk mesh
+    const trunkRadius = Math.random() * (2 - 1) + 1;
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(trunkRadius, trunkRadius, 5, 32 ), new THREE.MeshBasicMaterial({map: trunkTexture, })); //create trunk mesh
     //create leaves
     const greenMaterial = new THREE.MeshPhongMaterial( { color: 0x00ff00, emissive: 0x55dd33, specular: 0x61c975, shininess: 81 } ); //create green material 
-    const baseLeaves = new THREE.Mesh(new THREE.ConeGeometry( 5, 10, 32 ), greenMaterial);
-    const topLeaves = new THREE.Mesh(new THREE.ConeGeometry( 4.5, 8, 32 ), greenMaterial);
+    const leafRadius = Math.random() * (5 - 3) + 3;
+    const baseLeaves = new THREE.Mesh(new THREE.ConeGeometry( leafRadius, 10, 32 ), greenMaterial);
+    const topLeaves = new THREE.Mesh(new THREE.ConeGeometry( leafRadius- 0.5, 8, 32 ), greenMaterial);
     //make leaves relevant to trunk
     baseLeaves.position.y = trunk.position.y + 5;
     topLeaves.position.y = trunk.position.y + 8;
@@ -79,14 +81,14 @@ export const createManyObjects=(scene)=>{
 }
 
 
-export const createPointGeometry=(scene)=>{
-    const pointGeometry = new THREE.SphereGeometry( 15, 32, 16);
+export const createPointGeometry=(scene, x, y, z, size)=>{
+    const pointGeometry = new THREE.SphereGeometry( size, 16, 8);
 
-    const newMaterial = new THREE.PointsMaterial({color:'red', size:0.5});
+    const newMaterial = new THREE.PointsMaterial({color:'blue', size:0.5});
     let pointObject = new THREE.Points(pointGeometry, newMaterial);
+    pointObject.position.set(x, y, z);
     scene.add(pointObject);
-    let mesh2 = pointObject.clone();
-    scene.add(mesh2);
+    return pointObject;
 }
 
 
@@ -100,19 +102,19 @@ const waterTexture = new THREE.TextureLoader().load('resources/images/water.jpg'
 
 waterTexture.wrapS = THREE.RepeatWrapping;
 waterTexture.wrapT = THREE.RepeatWrapping;
-waterTexture.repeat.set( 2, 2 );
+waterTexture.repeat.set( 10, 10 );
 
 const waterPlaneMaterialProperties = {map: waterTexture, side: THREE.DoubleSide, transparent: true};
 const waterMaterial = new THREE.MeshBasicMaterial(waterPlaneMaterialProperties)
 
-const waterWidth = 100;
+const waterWidth = 200;
 const waterLength = 100;
 const waterGeometry = new THREE.PlaneGeometry(waterWidth, waterWidth, 10, 10);
 const waterPlane = new THREE.Mesh(waterGeometry, waterMaterial);
 
 const waterVertexCount = waterGeometry.attributes.position.count;
 waterPlane.position.set(0, -4.5, 50);
-waterPlane.rotation.x = Math.PI / 2;
+waterPlane.rotation.x = ((2 *Math.PI) / 360) * 85;
 
 
 
