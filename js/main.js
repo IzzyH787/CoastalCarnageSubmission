@@ -1,6 +1,9 @@
 import * as THREE from 'three'; //import three.js
+
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
+import { Timer } from 'three/addons/misc/Timer.js';
+
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
 import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
@@ -40,14 +43,20 @@ stats = new Stats();
 document.body.appendChild(stats.dom);
 
 //////////////DECLARING VARIABLES///////////////
+
+
 let playerDrowned = false;
 let waterParticles;
 
+let playerIsDead = false;
 let playerHealth = 10;
 const playerMaxHealth = 10;
 let healthText = "Health: ";
 healthText = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
 document.getElementById("health-display").innerHTML = healthText;
+
+const timer = new Timer();
+const startTime = Date.now();
 
 //////////////DEFINING FUNCTIONS///////////////////
 const animateWaterPlane = (geometry, count) => {
@@ -101,6 +110,7 @@ const movePlayer=()=>{
         waterParticles = createPointGeometry(scene, player.position.x, player.position.y, player.position.z, 2);
         console.log('drowned');
         playerDrowned = true;
+        playerIsDead = true;
         playerHealth = 0;
         healthText = "Health: "
         document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
@@ -155,6 +165,10 @@ function animate() {
     //check for collision between player and enemy
     if (boxCollision({box1: player, box2: enemy})){
         console.log("boom");
+        playerHealth--;
+        if (playerHealth < 0){playerHealth = 0;}
+        let healthText = "Health: ";
+        document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
         //cancelAnimationFrame(animationId);
     }
     })
@@ -168,7 +182,12 @@ function animate() {
     renderer.render(scene, camera); //render scene
     frames++; //increment frame number
 
+    let timerText = "Timer: ";
 
+    if (!playerIsDead){
+        document.getElementById("timer-display").innerHTML = timerText.concat((Date.now() - startTime) /1000);
+    }
+    
 }
 
 
@@ -363,6 +382,12 @@ const playAction=(index)=>{
 
 
 ///////////////INPUT STUFF///////////////////
+
+const keysPressed = { };
+// document.addEventListener('keydown', (event) => {
+//     (keysPressed as any)[event.key.toLowerCase()] = true
+// }, false);
+
 const keys = {
     a: {
         pressed: false
