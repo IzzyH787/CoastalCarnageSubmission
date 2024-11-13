@@ -2,7 +2,9 @@ import * as THREE from 'three'; //import three.js
 
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
-import { Timer } from 'three/addons/misc/Timer.js';
+import {FBXLoader} from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FBXLoader.js"
+import {Timer } from 'https://unpkg.com/three@0.169.0/examples/jsm/misc/Timer.js';
+//import { Timer } from 'three/addons/misc/Timer.js';
 
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
@@ -84,8 +86,8 @@ const movePlayer=()=>{
     else if (keys.d.pressed){player.velocity.x = speed; } //move right
 
     //separate if for axis allows them to be true at same time
-    if (keys.w.pressed){player.velocity.z = -speed;} //move forward
-    else if (keys.s.pressed){player.velocity.z =speed; } //move backward
+    if (keys.w.pressed){player.velocity.z = speed;} //move forward
+    else if (keys.s.pressed){player.velocity.z = -speed; } //move backward
 
     //check if player walks into wall
     if (boxCollision({box1: player, box2: wallLeft})){
@@ -144,6 +146,8 @@ function animate() {
     //update animation mixer
     var delta = clock.getDelta();
     if (mixer) mixer.update(delta);
+    if (zombie.animMixer) zombie.animMixer.update(delta);
+    zombie.Update(delta);
 
     //update stats (fps) display
     stats.update();
@@ -375,9 +379,157 @@ const playAction=(index)=>{
 }
 
 
+////////////LOAD FBX MODEL/////////////
+// let animMixer;
+// const loadAnimatedModel = () => {
+//     const loader = new FBXLoader();
+//     loader.setPath('./resources/3dmodels/');
+//     loader.load('zombie.fbx', (fbx)=> {
+//         fbx.scale.setScalar(0.1);
+//         fbx.traverse(c => {
+//             c.castShadow = true;
+//         });
+//     const anim = new FBXLoader();
+//     anim.setPath('./resources/animations/');
+//     anim.load('zombie-idle.fbx', (anim) => {
+//         animMixer = new THREE.AnimationMixer(fbx);
+//         const idle = animMixer.clipAction(anim.animations[0]);
+//         idle.play();
+//     });
+//     scene.add(fbx);
+//     });
+// }
+
+class CharacterController{
+    constructor(params){
+        this.Init(params);
+    }
+
+    Init = (params) => {
+        this.params = params;
+        this.move = {
+            forward: false,
+            backward: false,
+            left: false,
+            right: false
+        };
+        this. decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
+        this.acceleration = new THREE.Vector3(1, 0.25, 50.0);
+        this.velocity = new THREE.Vector3(0,0,0);
+        this.pos = new THREE.Vector3(0,0,0);
+
+        document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
+        document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
+
+        
+    }
+
+    onKeyDown = (event) =>{
+        switch(event.keyCode){
+            case 87: //w
+                this.move.forward = true;
+                break;
+            case 65: //a
+                this.move.left = true;
+                break;
+            case 83: //s
+                this.move.backward = true;
+                break;
+            case 68: //d
+                this.move.right = true;
+                break;
+            case 38: //up
+            case 37: //left
+            case 40: //down
+            case 39: //right
+                break;
+        }
+    }
+
+    onKeyUp = (event) =>{
+        switch(event.keyCode){
+            case 87: //w
+                this.move.forward = false;
+                break;
+            case 65: //a
+                this.move.left = false;
+                break;
+            case 83: //s
+                this.move.backward = false;
+                break;
+            case 68: //d
+                this.move.right = false;
+                break;
+            case 38: //up
+            case 37: //left
+            case 40: //down
+            case 39: //right
+                break;
+        }
+    }
+
+    loadAnimatedModel = () => {
+        const loader = new FBXLoader();
+        loader.setPath('./resources/3dmodels/');
+        loader.load('zombie.fbx', (fbx)=> {
+            this.model = fbx;
+            this.model.scale.setScalar(0.1);
+            this.model.traverse(c => {
+                c.castShadow = true;
+            });
+        const anim = new FBXLoader();
+        anim.setPath('./resources/animations/');
+        anim.load('zombie-idle.fbx', (anim) => {
+            this.animMixer = new THREE.AnimationMixer(this.model);
+            const idle = this.animMixer.clipAction(anim.animations[0]);
+            idle.play();
+        });
+        
+        scene.add(this.model);
+    });
+}
+    Update(timeInSeconds){
+        const velocity = this.velocity;
+        const frameDecceleration = new THREE.Vector3(
+            velocity.x * this.decceleration.x,
+            velocity.y * this.decceleration.y,
+            velocity.z * this.decceleration.z
+        );
+        frameDecceleration.multiplyScalar(timeInSeconds);
+        frameDecceleration.z = Math.sign(frameDecceleration) * Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z));
+        velocity.add(frameDecceleration);
+
+        const controlObject = this.params.target;
+        const Q = new THREE.Quaternion();
+        const A = new THREE.Vector3();
+        //const R = controlObject.Quaternion.clone();
+
+        if (this.move.forward){
+            console.log("foward");
+            this.velocity.z += this.acceleration.z * timeInSeconds;
+            console.log (velocity.z);
+            this.model.position.z += speed;
+        }
+        if (this.move.backward){
+            velocity.z -= this.acceleration.z * timeInSeconds;
+            this.model.position.z -= speed;
+        }
+        if (this.move.right){
+            velocity.x += this.acceleration.x * timeInSeconds;
+            this.model.position.x += speed;
+        }
+        if (this.move.left){
+            velocity.x -= this.acceleration.x * timeInSeconds;
+            this.model.position.x -= speed;
+        }
+    }
 
 
+}
 
+
+const zombie = new CharacterController(0);
+zombie.loadAnimatedModel();
 
 
 
