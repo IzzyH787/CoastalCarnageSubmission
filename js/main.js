@@ -100,38 +100,38 @@ const animateWaterPlane = (geometry, count) => {
     waterTexture.offset.y += 0.0005;
 }
 
-const checkInput=()=>{
-    //move left
-    if (keys.a.pressed){
-        player.velocity.x = -speed;
-        zombie.characterModel.position.x -= speed;
-    } 
-    //move right
-    else if (keys.d.pressed){
-        player.velocity.x = speed; 
-        zombie.characterModel.position.x += speed;
-    } 
+// const checkInput=()=>{
+//     //move left
+//     if (keys.a.pressed){
+//         player.velocity.x = -speed;
+//         zombie.characterModel.position.x -= speed;
+//     } 
+//     //move right
+//     else if (keys.d.pressed){
+//         player.velocity.x = speed; 
+//         zombie.characterModel.position.x += speed;
+//     } 
 
-    //separate if for axis allows them to be true at same time
+//     //separate if for axis allows them to be true at same time
 
-    //move forward
-    if (keys.w.pressed){
-        player.velocity.z = speed;
-        zombie.characterModel.position.z += speed;
-    } 
-    //move backward
-    else if (keys.s.pressed){
-        player.velocity.z = -speed; 
-        zombie.characterModel.position.z -= speed;
-    } 
-}
+//     //move forward
+//     if (keys.w.pressed){
+//         player.velocity.z = speed;
+//         zombie.characterModel.position.z += speed;
+//     } 
+//     //move backward
+//     else if (keys.s.pressed){
+//         player.velocity.z = -speed; 
+//         zombie.characterModel.position.z -= speed;
+//     } 
+// }
 
 const movePlayer=()=>{
     //movement code
     player.velocity.x = 0 //stop player at start of frame
     player.velocity.z = 0 //stop player at start of frame
 
-    checkInput();
+    //checkInput();
 
     //check if player walks into wall
     if (boxCollision({box1: player, box2: wallLeft})){
@@ -507,7 +507,7 @@ class CharacterController{
             //this.velocity.z += this.acceleration.z * timeInSeconds;
             //console.log (velocity.z);
 
-            this.characterModel.position.z += speed;
+            this.characterModel.position.z -= speed;
 
             if (this.characterActions['walk']){
                 console.log('anim maybe');
@@ -516,16 +516,16 @@ class CharacterController{
             }
 
             //rotate player model
-            this.characterModel.rotation.y = 0;
+            this.characterModel.rotation.y = Math.PI;
 
             //move player cube
-            player.position.z += speed;
+            player.position.z -= speed;
         }
 
 
         else if (this.move.backward){
             //velocity.z -= this.acceleration.z * timeInSeconds;
-            this.characterModel.position.z -= speed;
+            this.characterModel.position.z += speed;
 
             if (this.characterActions['walk']){
                 console.log('anim maybe');
@@ -534,10 +534,10 @@ class CharacterController{
             }
 
             //rotate player model
-            this.characterModel.rotation.y = Math.PI;
+            this.characterModel.rotation.y = 0;
 
             //move player cube
-            player.position.z -= speed;
+            player.position.z += speed;
 
         }
 
