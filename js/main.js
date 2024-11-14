@@ -11,12 +11,29 @@ import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.modul
 import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision} from './box.js';
 
+///////////CREATING LOADING SCREEN///////////
+
+//create loading manager 
+const loadingManager = new THREE.LoadingManager();
+//get progress bar elemt from index.html
+const progressBar = document.getElementById('progress-bar');
+const progressBarContainer = document.querySelector('.progress-bar-container');
+//called for each item loaded by loader
+loadingManager.onProgress=(url, loaded, total)=>{
+    console.log('Started loading: ' + url);
+    progressBar.value = (loaded / total) * 100;
+}
+
+//called after all files are loaded
+loadingManager.onLoad=()=>{
+    progressBarContainer.style.display = 'none';
+}
 
 ////////////SETTING UP SCENE/////////////
 
 const scene = new THREE.Scene(); //create scene
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //create scene camera
-const loader = new THREE.TextureLoader();
+const loader = new THREE.TextureLoader(loadingManager);
 
 //setting up renderer
 
@@ -215,7 +232,7 @@ const ground = new Box({width: 200, height: 0.5, depth: 150, color: 0xF0E8DC, po
 ground.receiveShadow = true;
 scene.add(ground);
 
-const sandTexture = new THREE.TextureLoader().load('resources/images/sand.jpg');
+const sandTexture = new THREE.TextureLoader(loadingManager).load('resources/images/sand.jpg');
 
 sandTexture.wrapS = THREE.RepeatWrapping;
 sandTexture.wrapT = THREE.RepeatWrapping;
@@ -297,7 +314,7 @@ if (player.position.y > 1 && !change){
 
 
 const addModel=(fileName, scale, model, animationsArray)=>{
-    const gltfloader  = new GLTFLoader().setPath("resources/3dmodels/");
+    const gltfloader  = new GLTFLoader(loadingManager).setPath("resources/3dmodels/");
     // Load a glTF resource
     gltfloader.load(
         fileName,  // called when the resource is loaded
@@ -421,6 +438,7 @@ class CharacterController{
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
 
+
         
     }
 
@@ -469,11 +487,11 @@ class CharacterController{
     }
 
     loadAnimatedModel = () => {
-        const loader = new FBXLoader();
+        const loader = new FBXLoader(loadingManager);
         loader.setPath('./resources/3dmodels/');
         loader.load('zombie.fbx', (fbx)=> {
             this.model = fbx;
-            this.model.scale.setScalar(0.1);
+            this.model.scale.setScalar(0.04);
             this.model.traverse(c => {
                 c.castShadow = true;
             });
@@ -484,7 +502,11 @@ class CharacterController{
             const idle = this.animMixer.clipAction(anim.animations[0]);
             idle.play();
         });
-        
+        // anim.load('zombie-run.fbx', (anim) => {
+        //     const run = this.animMixer(clipAction(anim.animations[1]));
+        //     run.play();
+        // })
+        this.model.position.y = -3; //put model on the floor
         scene.add(this.model);
     });
 }
@@ -505,10 +527,16 @@ class CharacterController{
         //const R = controlObject.Quaternion.clone();
 
         if (this.move.forward){
-            console.log("foward");
+
+            //velocity calculation doesn't work
             this.velocity.z += this.acceleration.z * timeInSeconds;
             console.log (velocity.z);
             this.model.position.z += speed;
+            const anim = new FBXLoader(loadingManager);
+            anim.load('resources/animations/zombie-run.fbx', (anim) => {
+                const run = this.animMixer(clipAction(anim.animations[1]));
+                run.play();
+            })
         }
         if (this.move.backward){
             velocity.z -= this.acceleration.z * timeInSeconds;
