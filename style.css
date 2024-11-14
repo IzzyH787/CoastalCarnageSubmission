@@ -1,3 +1,5 @@
+
+/*in-game UI*/
 .overlay-text{
     position: absolute;
     top: 20%;
@@ -10,13 +12,14 @@
 
 /*Basic web pages*/
 body{
-    background-color: #bddff7;
+    background-color: #F0E8DC;
     color: #EC6E18;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 h1{
     text-align: center;
+    font-weight: bold;
 }
 
 nav {
@@ -26,19 +29,49 @@ nav {
   
     padding: 0 50px;
     height: 80px;
-    background-color: #9ed1f5;
+
   }
 
   nav a{
     text-decoration: none;
-    color: #EC6E18;
     font-weight: bold;
+
+    outline: #EC6E18;
+    outline-width: 2px;
+    outline-style: solid;
+
+    color: #EC6E18;
+    background-color: #F0E8DC;
+
+    border-radius: 5px;
+
+    padding: 5px;
   }
 
-  .input-section{
+
+.main-section{
+    outline: #EC6E18;
+    outline-width: 2px;
+    outline-style: solid;
+    color: #FF9966;
+    background-color: #9ed1f5;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#description{
+  height: 50%;
+  font-weight: bold;
+}
+
+#input-section{
     align-items: center;
-    width: 100%;
-    margin: auto;
+    text-align: center;
+    width: 50%;
+    left: 50%;
+    margin-top: 20px;
+    margin-left: 25%;
+    margin-right: 25%;
   }
 
   .progress-bar-container{
