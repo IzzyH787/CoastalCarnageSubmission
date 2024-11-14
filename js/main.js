@@ -517,6 +517,9 @@ class CharacterController{
 
             //rotate player model
             this.characterModel.rotation.y = 0;
+
+            //move player cube
+            player.position.z += speed;
         }
 
 
@@ -533,6 +536,9 @@ class CharacterController{
             //rotate player model
             this.characterModel.rotation.y = Math.PI;
 
+            //move player cube
+            player.position.z -= speed;
+
         }
 
 
@@ -547,6 +553,9 @@ class CharacterController{
 
             //rotate player model
             this.characterModel.rotation.y = Math.PI / 2;
+
+            //move player cube
+            player.position.x += speed;
 
         }
 
@@ -563,6 +572,9 @@ class CharacterController{
 
             //rotate player model
             this.characterModel.rotation.y = -Math.PI / 2;
+
+            //move player cube
+            player.position.x -= speed;
 
         }
 
@@ -650,19 +662,15 @@ window.addEventListener('keyup', (event) => {
 
 //movement form UI buttons
 const moveUp =()=>{
-    player.position.z -= speed;
     zombie.move.forward = true;
 }
 const moveDown=()=>{
-    player.position.z += speed;
     zombie.move.backward = true;
 }
 const moveLeft =()=>{
-    player.position.x -= speed;
     zombie.move.left = true;
 }
 const moveRight=()=>{
-    player.position.x += speed;
     zombie.move.right = true;
 }
 
