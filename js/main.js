@@ -78,6 +78,11 @@ const clock = new THREE.Clock();
 const timer = new Timer();
 const startTime = Date.now();
 
+
+
+
+
+
 //////////////DEFINING FUNCTIONS///////////////////
 const animateWaterPlane = (geometry, count) => {
     //iterate through verties of water plane
@@ -95,17 +100,38 @@ const animateWaterPlane = (geometry, count) => {
     waterTexture.offset.y += 0.0005;
 }
 
+const checkInput=()=>{
+    //move left
+    if (keys.a.pressed){
+        player.velocity.x = -speed;
+        zombie.characterModel.position.x -= speed;
+    } 
+    //move right
+    else if (keys.d.pressed){
+        player.velocity.x = speed; 
+        zombie.characterModel.position.x += speed;
+    } 
+
+    //separate if for axis allows them to be true at same time
+
+    //move forward
+    if (keys.w.pressed){
+        player.velocity.z = speed;
+        zombie.characterModel.position.z += speed;
+    } 
+    //move backward
+    else if (keys.s.pressed){
+        player.velocity.z = -speed; 
+        zombie.characterModel.position.z -= speed;
+    } 
+}
+
 const movePlayer=()=>{
     //movement code
     player.velocity.x = 0 //stop player at start of frame
     player.velocity.z = 0 //stop player at start of frame
 
-    if (keys.a.pressed){player.velocity.x = -speed;} //move left
-    else if (keys.d.pressed){player.velocity.x = speed; } //move right
-
-    //separate if for axis allows them to be true at same time
-    if (keys.w.pressed){player.velocity.z = speed;} //move forward
-    else if (keys.s.pressed){player.velocity.z = -speed; } //move backward
+    checkInput();
 
     //check if player walks into wall
     if (boxCollision({box1: player, box2: wallLeft})){
@@ -285,26 +311,6 @@ createSkybox(scene);
 
 
 
-//movement form UI buttons
-const moveUp =()=>{
-    player.position.z -= 3;
-    chicken.position.z -= 3;
-}
-const moveDown=()=>{
-    player.position.z += 3;
-}
-const moveLeft =()=>{
-    player.position.x -= 3;
-}
-const moveRight=()=>{
-    player.position.x += 3;
-}
-//get buttons by ID
-document.getElementById("up-button").addEventListener("click", moveUp);
-document.getElementById("down-button").addEventListener("click", moveDown);
-document.getElementById("left-button").addEventListener("click", moveLeft);
-document.getElementById("right-button").addEventListener("click", moveRight);
-
 
 let change = false;
 //change colour
@@ -402,49 +408,16 @@ class CharacterController{
     onKeyDown = (event) =>{
         switch(event.keyCode){
             case 87: //w
-                this.move.forward = true;
-                //swap to walk animation
-                if (this.characterActions['walk']){
-                    console.log('anim maybe');
-                    this.characterActions['idle']?.stop(); //stop other animation
-                    this.characterActions['walk'].play(); //play idle animation 
-                }
-                //rotate player model
-                this.characterModel.rotation.y = 0;
-
+                this.move.forward = true;             
                 break;
             case 65: //a
-                this.move.left = true;
-                //swap to walk animation
-                if (this.characterActions['walk']){
-                    console.log('anim maybe');
-                    this.characterActions['idle']?.stop(); //stop other animation
-                    this.characterActions['walk'].play(); //play idle animation 
-                }
-                //rotate player model
-                this.characterModel.rotation.y = -Math.PI / 2;
+                this.move.left = true;;
                 break;
             case 83: //s
                 this.move.backward = true;
-                //swap to walk animation
-                if (this.characterActions['walk']){
-                    console.log('anim maybe');
-                    this.characterActions['idle']?.stop(); //stop other animation
-                    this.characterActions['walk'].play(); //play idle animation 
-                }
-                //rotate player model
-                this.characterModel.rotation.y = Math.PI;
                 break;
             case 68: //d
                 this.move.right = true;
-                //swap to walk animation
-                if (this.characterActions['walk']){
-                    console.log('anim maybe');
-                    this.characterActions['idle']?.stop(); //stop other animation
-                    this.characterActions['walk'].play(); //play idle animation 
-                }
-                //rotate player model
-                this.characterModel.rotation.y = Math.PI / 2;
                 break;
             case 38: //up
             case 37: //left
@@ -458,35 +431,15 @@ class CharacterController{
         switch(event.keyCode){
             case 87: //w
                 this.move.forward = false;
-                //swap back to idle animation
-                if (this.characterActions['idle']){
-                    this.characterActions['walk']?.stop(); //stop other animation
-                    this.characterActions['idle'].play(); //play idle animation 
-                }
                  break;
             case 65: //a
                 this.move.left = false;
-                //swap back to idle animation
-                if (this.characterActions['idle']){
-                    this.characterActions['walk']?.stop(); //stop other animation
-                    this.characterActions['idle'].play(); //play idle animation 
-                }
                 break;
             case 83: //s
                 this.move.backward = false;
-                //swap back to idle animation
-                if (this.characterActions['idle']){
-                    this.characterActions['walk']?.stop(); //stop other animation
-                    this.characterActions['idle'].play(); //play idle animation 
-                }
                 break;
             case 68: //d
                 this.move.right = false;
-                //swap back to idle animation
-                if (this.characterActions['idle']){
-                    this.characterActions['walk']?.stop(); //stop other animation
-                    this.characterActions['idle'].play(); //play idle animation 
-                }
                 break;
             case 38: //up
             case 37: //left
@@ -546,6 +499,8 @@ class CharacterController{
         // const A = new THREE.Vector3();
         //const R = controlObject.Quaternion.clone();
 
+
+        //handling inputs
         if (this.move.forward){
 
             ///////////////velocity calculation doesn't work/////////////////
@@ -553,18 +508,70 @@ class CharacterController{
             //console.log (velocity.z);
 
             this.characterModel.position.z += speed;
+
+            if (this.characterActions['walk']){
+                console.log('anim maybe');
+                this.characterActions['idle']?.stop(); //stop other animation
+                this.characterActions['walk'].play(); //play idle animation
+            }
+
+            //rotate player model
+            this.characterModel.rotation.y = 0;
         }
-        if (this.move.backward){
+
+
+        else if (this.move.backward){
             //velocity.z -= this.acceleration.z * timeInSeconds;
             this.characterModel.position.z -= speed;
+
+            if (this.characterActions['walk']){
+                console.log('anim maybe');
+                this.characterActions['idle']?.stop(); //stop other animation
+                this.characterActions['walk'].play(); //play idle animation 
+            }
+
+            //rotate player model
+            this.characterModel.rotation.y = Math.PI;
+
         }
-        if (this.move.right){
+
+
+        else if (this.move.right){
             //velocity.x += this.acceleration.x * timeInSeconds;
             this.characterModel.position.x += speed;
+            if (this.characterActions['walk']){
+                console.log('anim maybe');
+                this.characterActions['idle']?.stop(); //stop other animation
+                this.characterActions['walk'].play(); //play idle animation 
+            }
+
+            //rotate player model
+            this.characterModel.rotation.y = Math.PI / 2;
+
         }
-        if (this.move.left){
+
+
+
+        else if (this.move.left){
             //velocity.x -= this.acceleration.x * timeInSeconds;
             this.characterModel.position.x -= speed;
+            if (this.characterActions['walk']){
+                console.log('anim maybe');
+                this.characterActions['idle']?.stop(); //stop other animation
+                this.characterActions['walk'].play(); //play idle animation 
+            }
+
+            //rotate player model
+            this.characterModel.rotation.y = -Math.PI / 2;
+
+        }
+
+        else{
+            //swap back to idle animation
+            if (this.characterActions['idle']){
+                this.characterActions['walk']?.stop(); //stop other animation
+                this.characterActions['idle'].play(); //play idle animation 
+            }
         }
     }
 
@@ -621,7 +628,7 @@ window.addEventListener('keydown', (event) => {
             
             break;     
     }
-})
+});
 window.addEventListener('keyup', (event) => {
     switch(event.code){
         case 'KeyW':
@@ -637,4 +644,63 @@ window.addEventListener('keyup', (event) => {
             keys.d.pressed = false;
             break;
     }
-})
+});
+
+//////////////////UI INPUT/////////////////
+
+//movement form UI buttons
+const moveUp =()=>{
+    player.position.z -= speed;
+    zombie.move.forward = true;
+}
+const moveDown=()=>{
+    player.position.z += speed;
+    zombie.move.backward = true;
+}
+const moveLeft =()=>{
+    player.position.x -= speed;
+    zombie.move.left = true;
+}
+const moveRight=()=>{
+    player.position.x += speed;
+    zombie.move.right = true;
+}
+
+
+const stopMoveUp =()=>{
+    zombie.move.forward = false;
+}
+const stopMoveDown=()=>{
+    zombie.move.backward = false;
+}
+const stopMoveLeft =()=>{
+    zombie.move.left = false;
+}
+const stopMoveRight=()=>{
+    zombie.move.right = false;
+}
+
+
+//get buttons by ID
+document.getElementById("up-button").addEventListener("mousedown", moveUp);
+document.getElementById("down-button").addEventListener("mousedown", moveDown);
+document.getElementById("left-button").addEventListener("mousedown", moveLeft);
+document.getElementById("right-button").addEventListener("mousedown", moveRight);
+
+document.getElementById("up-button").addEventListener("mouseup", stopMoveUp);
+document.getElementById("down-button").addEventListener("mouseup", stopMoveDown);
+document.getElementById("left-button").addEventListener("mouseup", stopMoveLeft);
+document.getElementById("right-button").addEventListener("mouseup", stopMoveRight);
+
+document.getElementById("up-button").addEventListener("touchstart", moveUp);
+document.getElementById("down-button").addEventListener("touchstart", moveDown);
+document.getElementById("left-button").addEventListener("touchstart", moveLeft);
+document.getElementById("right-button").addEventListener("touchstart", moveRight);
+
+document.getElementById("up-button").addEventListener("touchend", stopMoveUp);
+document.getElementById("down-button").addEventListener("touchend", stopMoveDown);
+document.getElementById("left-button").addEventListener("touchend", stopMoveLeft);
+document.getElementById("right-button").addEventListener("touchend", stopMoveRight);
+
+
+
