@@ -74,6 +74,7 @@ let healthText = "Health: ";
 healthText = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
 document.getElementById("health-display").innerHTML = healthText;
 
+const clock = new THREE.Clock();
 const timer = new Timer();
 const startTime = Date.now();
 
@@ -162,13 +163,12 @@ function animate() {
 
     //update animation mixer
     var delta = clock.getDelta();
-    if (mixer) mixer.update(delta);
     if (zombie.characterMixer) zombie.characterMixer.update(delta);
     zombie.Update(delta);
 
 
 
-    if (playerMixer)playerMixer.update(delta);
+    //if (playerMixer)playerMixer.update(delta);
 
     //update stats (fps) display
     stats.update();
@@ -356,70 +356,6 @@ const addModel=(fileName, scale, model, animationsArray)=>{
 }
 
 
-////////////////WEEK 6//////////////////////////////
-let chicken; //store gltf model
-let mixer;
-let chickenAnimations = []; //store chicken model's animations
-let chickenState;
-const clock = new THREE.Clock();
-addModel('chicken.gltf', 0.5, chicken, chickenAnimations);
-
-const displayPeck=()=>{
-    console.log("Animation 0");
-    //chickenState = 0;
-    playAction(0);
-    //chickenMixer.clipAction(chickenAnimations[0]).play;
-}
-const displayWalk=()=>{
-    console.log("Animation 1");
-    //chickenState = 1;
-    playAction(1);
-}
-const displayTwerk=()=>{
-    console.log("Animation 2");
-    //chickenState = 2;
-    playAction(2);
-}
-
-
-document.getElementById("action1").addEventListener("click", displayPeck);
-document.getElementById("action2").addEventListener("click", displayWalk);
-document.getElementById("action3").addEventListener("click", displayTwerk);
-
-const playAction=(index)=>{
-    const action = chickenAnimations[index];
-    console.log('play action');
-    if (mixer != null){
-        console.log('mixer exists');
-        mixer.stopAllAction();
-
-        action.reset();
-        action.fadeIn(0.5);
-        action.play();
-    }
-}
-
-
-////////////LOAD FBX MODEL/////////////
-// let animMixer;
-// const loadAnimatedModel = () => {
-//     const loader = new FBXLoader();
-//     loader.setPath('./resources/3dmodels/');
-//     loader.load('zombie.fbx', (fbx)=> {
-//         fbx.scale.setScalar(0.1);
-//         fbx.traverse(c => {
-//             c.castShadow = true;
-//         });
-//     const anim = new FBXLoader();
-//     anim.setPath('./resources/animations/');
-//     anim.load('zombie-idle.fbx', (anim) => {
-//         animMixer = new THREE.AnimationMixer(fbx);
-//         const idle = animMixer.clipAction(anim.animations[0]);
-//         idle.play();
-//     });
-//     scene.add(fbx);
-//     });
-// }
 
 class CharacterController{
     constructor(params){
@@ -561,22 +497,20 @@ class CharacterController{
     }
 
     
-    loadCharacterAnimation=(name, path)=>{
-        this.fbxLoader.load(path, (animObject)=>{
-            const clip = animObject.animations[0];
-            const action = this.characterMixer.clipAction(clip, this.characterModel);
-            this.characterActions[name] = action;
-        });
-    }
+    // loadCharacterAnimation=(name, path)=>{
+    //     this.fbxLoader.load(path, (animObject)=>{
+    //         const clip = animObject.animations[0];
+    //         const action = this.characterMixer.clipAction(clip, this.characterModel);
+    //         this.characterActions[name] = action;
+    //     });
+    // }
 
     loadModel=()=>{
         this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
             fbx.scale.setScalar(0.04);
+            fbx.position.set(0, -3, 0);
             scene.add(fbx);
             this.characterModel = fbx;
-
-            //loadCharacterAnimation('idle', 'resources/animations/zombie-idle.fbx');
-            //loadCharacterAnimation('walk', 'resources/animations/zombie-run.fbx');
 
 
             //load idle animation
@@ -596,43 +530,20 @@ class CharacterController{
     }
 
 
-
-    ////////////delete/////////////
-    // loadAnimatedModel = () => {
-    //     const loader = new FBXLoader(loadingManager);
-    //     loader.setPath('./resources/3dmodels/');
-    //     loader.load('zombie.fbx', (fbx)=> {
-    //         this.model = fbx;
-    //         this.model.scale.setScalar(0.04);
-    //         this.model.traverse(c => {
-    //             c.castShadow = true;
-    //         });
-    //     const anim = new FBXLoader();
-    //     anim.setPath('./resources/animations/');
-    //     anim.load('zombie-idle.fbx', (anim) => {
-    //         this.animMixer = new THREE.AnimationMixer(this.model);
-    //         const idle = this.animMixer.clipAction(anim.animations[0]);
-    //         idle.play();
-    //     });
-
-    //     this.model.position.y = -3; //put model on the floor
-    //     scene.add(this.model);
-    //     });
-    // }
     Update(timeInSeconds){
-        const velocity = this.velocity;
-        const frameDecceleration = new THREE.Vector3(
-            velocity.x * this.decceleration.x,
-            velocity.y * this.decceleration.y,
-            velocity.z * this.decceleration.z
-        );
-        frameDecceleration.multiplyScalar(timeInSeconds);
-        frameDecceleration.z = Math.sign(frameDecceleration) * Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z));
-        velocity.add(frameDecceleration);
+        // const velocity = this.velocity;
+        // const frameDecceleration = new THREE.Vector3(
+        //     velocity.x * this.decceleration.x,
+        //     velocity.y * this.decceleration.y,
+        //     velocity.z * this.decceleration.z
+        // );
+        // frameDecceleration.multiplyScalar(timeInSeconds);
+        // frameDecceleration.z = Math.sign(frameDecceleration) * Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z));
+        // velocity.add(frameDecceleration);
 
-        const controlObject = this.params.target;
-        const Q = new THREE.Quaternion();
-        const A = new THREE.Vector3();
+        // const controlObject = this.params.target;
+        // const Q = new THREE.Quaternion();
+        // const A = new THREE.Vector3();
         //const R = controlObject.Quaternion.clone();
 
         if (this.move.forward){
@@ -663,49 +574,7 @@ class CharacterController{
 
 const zombie = new CharacterController(0);
 zombie.loadModel();
-//zombie.loadAnimatedModel();
 
-
-
-////////////////WORKING OUT ANIMATIONS//////////////////
-const fbxLoader = new FBXLoader();
-let playerModel;
-
-
-const playerMixer = new THREE.AnimationMixer();
-const playerActions = {};
-
-const loadAnimation=(name, path)=>{
-    fbxLoader.load(path, (animObject)=>{
-        const clip = animObject.animations[0];
-        const action = playerMixer.clipAction(clip, playerModel);
-        playerActions[name] = action;
-    });
-}
-
-fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
-    
-    fbx.scale.setScalar(0.04);
-    fbx.position.x = 10;
-    scene.add(fbx);
-    playerModel = fbx;
-
-    loadAnimation('idle', 'resources/animations/zombie-idle.fbx');
-    loadAnimation('walk', 'resources/animations/zombie-run.fbx');
-
-});
-
-
-document.addEventListener('keydown', (event)=>{
-    if (event.key == '1' && playerActions['idle']){
-        playerActions['walk']?.stop(); //stop other animation
-        playerActions['idle'].reset().play(); //play idle animation
-    }
-    else if(event.key == '2' && playerActions['walk']){
-        playerActions['idle']?.stop(); //stop other animation
-        playerActions['walk'].reset().play(); //play walk animation
-    }
-});
 
 ///////////////INPUT STUFF///////////////////
 
