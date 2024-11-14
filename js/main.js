@@ -163,8 +163,10 @@ function animate() {
     //update animation mixer
     var delta = clock.getDelta();
     if (mixer) mixer.update(delta);
-    if (zombie.animMixer) zombie.animMixer.update(delta);
+    if (zombie.characterMixer) zombie.characterMixer.update(delta);
     zombie.Update(delta);
+
+
 
     if (playerMixer)playerMixer.update(delta);
 
@@ -437,10 +439,27 @@ class CharacterController{
         this.velocity = new THREE.Vector3(0,0,0);
         this.pos = new THREE.Vector3(0,0,0);
 
+        //input stuffs
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
 
+        //Animation stuffs
+        this.fbxLoader = new FBXLoader();
+        this.characterModel;
 
+        this.characterMixer = new THREE.AnimationMixer;
+        this.characterActions = {};
+
+
+        // this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
+        //     fbx.scale.setScalar(0.04);
+        //     scene.add(fbx);
+        //     this.characterModel = fbx;
+
+        //     loadCharacterAnimation('idle', 'resources/animations/zombie-idle.fbx');
+        //     loadCharacterAnimation('walk', 'resources/animations/zombie-run.fbx');
+
+        // });
         
     }
 
@@ -448,15 +467,48 @@ class CharacterController{
         switch(event.keyCode){
             case 87: //w
                 this.move.forward = true;
+                //swap to walk animation
+                if (this.characterActions['walk']){
+                    console.log('anim maybe');
+                    this.characterActions['idle']?.stop(); //stop other animation
+                    this.characterActions['walk'].play(); //play idle animation 
+                }
+                //rotate player model
+                this.characterModel.rotation.y = 0;
+
                 break;
             case 65: //a
                 this.move.left = true;
+                //swap to walk animation
+                if (this.characterActions['walk']){
+                    console.log('anim maybe');
+                    this.characterActions['idle']?.stop(); //stop other animation
+                    this.characterActions['walk'].play(); //play idle animation 
+                }
+                //rotate player model
+                this.characterModel.rotation.y = -Math.PI / 2;
                 break;
             case 83: //s
                 this.move.backward = true;
+                //swap to walk animation
+                if (this.characterActions['walk']){
+                    console.log('anim maybe');
+                    this.characterActions['idle']?.stop(); //stop other animation
+                    this.characterActions['walk'].play(); //play idle animation 
+                }
+                //rotate player model
+                this.characterModel.rotation.y = Math.PI;
                 break;
             case 68: //d
                 this.move.right = true;
+                //swap to walk animation
+                if (this.characterActions['walk']){
+                    console.log('anim maybe');
+                    this.characterActions['idle']?.stop(); //stop other animation
+                    this.characterActions['walk'].play(); //play idle animation 
+                }
+                //rotate player model
+                this.characterModel.rotation.y = Math.PI / 2;
                 break;
             case 38: //up
             case 37: //left
@@ -470,15 +522,35 @@ class CharacterController{
         switch(event.keyCode){
             case 87: //w
                 this.move.forward = false;
-                break;
+                //swap back to idle animation
+                if (this.characterActions['idle']){
+                    this.characterActions['walk']?.stop(); //stop other animation
+                    this.characterActions['idle'].play(); //play idle animation 
+                }
+                 break;
             case 65: //a
                 this.move.left = false;
+                //swap back to idle animation
+                if (this.characterActions['idle']){
+                    this.characterActions['walk']?.stop(); //stop other animation
+                    this.characterActions['idle'].play(); //play idle animation 
+                }
                 break;
             case 83: //s
                 this.move.backward = false;
+                //swap back to idle animation
+                if (this.characterActions['idle']){
+                    this.characterActions['walk']?.stop(); //stop other animation
+                    this.characterActions['idle'].play(); //play idle animation 
+                }
                 break;
             case 68: //d
                 this.move.right = false;
+                //swap back to idle animation
+                if (this.characterActions['idle']){
+                    this.characterActions['walk']?.stop(); //stop other animation
+                    this.characterActions['idle'].play(); //play idle animation 
+                }
                 break;
             case 38: //up
             case 37: //left
@@ -488,30 +560,65 @@ class CharacterController{
         }
     }
 
-    loadAnimatedModel = () => {
-        const loader = new FBXLoader(loadingManager);
-        loader.setPath('./resources/3dmodels/');
-        loader.load('zombie.fbx', (fbx)=> {
-            this.model = fbx;
-            this.model.scale.setScalar(0.04);
-            this.model.traverse(c => {
-                c.castShadow = true;
-            });
-        const anim = new FBXLoader();
-        anim.setPath('./resources/animations/');
-        anim.load('zombie-idle.fbx', (anim) => {
-            this.animMixer = new THREE.AnimationMixer(this.model);
-            const idle = this.animMixer.clipAction(anim.animations[0]);
-            idle.play();
+    
+    loadCharacterAnimation=(name, path)=>{
+        this.fbxLoader.load(path, (animObject)=>{
+            const clip = animObject.animations[0];
+            const action = this.characterMixer.clipAction(clip, this.characterModel);
+            this.characterActions[name] = action;
         });
-        // anim.load('zombie-run.fbx', (anim) => {
-        //     const run = this.animMixer(clipAction(anim.animations[1]));
-        //     run.play();
-        // })
-        this.model.position.y = -3; //put model on the floor
-        scene.add(this.model);
-    });
-}
+    }
+
+    loadModel=()=>{
+        this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
+            fbx.scale.setScalar(0.04);
+            scene.add(fbx);
+            this.characterModel = fbx;
+
+            //loadCharacterAnimation('idle', 'resources/animations/zombie-idle.fbx');
+            //loadCharacterAnimation('walk', 'resources/animations/zombie-run.fbx');
+
+
+            //load idle animation
+            this.fbxLoader.load('resources/animations/zombie-idle.fbx', (animObject)=>{
+                const clip = animObject.animations[0];
+                const action = this.characterMixer.clipAction(clip, this.characterModel);
+                this.characterActions['idle'] = action;
+            });
+
+            //load idle animation
+            this.fbxLoader.load('resources/animations/zombie-run.fbx', (animObject)=>{
+                const clip = animObject.animations[0];
+                const action = this.characterMixer.clipAction(clip, this.characterModel);
+                this.characterActions['walk'] = action;
+            });
+        });
+    }
+
+
+
+    ////////////delete/////////////
+    // loadAnimatedModel = () => {
+    //     const loader = new FBXLoader(loadingManager);
+    //     loader.setPath('./resources/3dmodels/');
+    //     loader.load('zombie.fbx', (fbx)=> {
+    //         this.model = fbx;
+    //         this.model.scale.setScalar(0.04);
+    //         this.model.traverse(c => {
+    //             c.castShadow = true;
+    //         });
+    //     const anim = new FBXLoader();
+    //     anim.setPath('./resources/animations/');
+    //     anim.load('zombie-idle.fbx', (anim) => {
+    //         this.animMixer = new THREE.AnimationMixer(this.model);
+    //         const idle = this.animMixer.clipAction(anim.animations[0]);
+    //         idle.play();
+    //     });
+
+    //     this.model.position.y = -3; //put model on the floor
+    //     scene.add(this.model);
+    //     });
+    // }
     Update(timeInSeconds){
         const velocity = this.velocity;
         const frameDecceleration = new THREE.Vector3(
@@ -530,27 +637,23 @@ class CharacterController{
 
         if (this.move.forward){
 
-            //velocity calculation doesn't work
-            this.velocity.z += this.acceleration.z * timeInSeconds;
-            console.log (velocity.z);
-            this.model.position.z += speed;
-           // const anim = new FBXLoader(loadingManager);
-            // anim.load('resources/animations/zombie-run.fbx', (anim) => {
-            //     const run = this.animMixer(clipAction(anim.animations[1]));
-            //     run.play();
-            // })
+            ///////////////velocity calculation doesn't work/////////////////
+            //this.velocity.z += this.acceleration.z * timeInSeconds;
+            //console.log (velocity.z);
+
+            this.characterModel.position.z += speed;
         }
         if (this.move.backward){
-            velocity.z -= this.acceleration.z * timeInSeconds;
-            this.model.position.z -= speed;
+            //velocity.z -= this.acceleration.z * timeInSeconds;
+            this.characterModel.position.z -= speed;
         }
         if (this.move.right){
-            velocity.x += this.acceleration.x * timeInSeconds;
-            this.model.position.x += speed;
+            //velocity.x += this.acceleration.x * timeInSeconds;
+            this.characterModel.position.x += speed;
         }
         if (this.move.left){
-            velocity.x -= this.acceleration.x * timeInSeconds;
-            this.model.position.x -= speed;
+            //velocity.x -= this.acceleration.x * timeInSeconds;
+            this.characterModel.position.x -= speed;
         }
     }
 
@@ -559,7 +662,8 @@ class CharacterController{
 
 
 const zombie = new CharacterController(0);
-zombie.loadAnimatedModel();
+zombie.loadModel();
+//zombie.loadAnimatedModel();
 
 
 
@@ -582,6 +686,7 @@ const loadAnimation=(name, path)=>{
 fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
     
     fbx.scale.setScalar(0.04);
+    fbx.position.x = 10;
     scene.add(fbx);
     playerModel = fbx;
 
