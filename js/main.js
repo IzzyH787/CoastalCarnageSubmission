@@ -166,6 +166,8 @@ function animate() {
     if (zombie.animMixer) zombie.animMixer.update(delta);
     zombie.Update(delta);
 
+    if (playerMixer)playerMixer.update(delta);
+
     //update stats (fps) display
     stats.update();
 
@@ -532,11 +534,11 @@ class CharacterController{
             this.velocity.z += this.acceleration.z * timeInSeconds;
             console.log (velocity.z);
             this.model.position.z += speed;
-            const anim = new FBXLoader(loadingManager);
-            anim.load('resources/animations/zombie-run.fbx', (anim) => {
-                const run = this.animMixer(clipAction(anim.animations[1]));
-                run.play();
-            })
+           // const anim = new FBXLoader(loadingManager);
+            // anim.load('resources/animations/zombie-run.fbx', (anim) => {
+            //     const run = this.animMixer(clipAction(anim.animations[1]));
+            //     run.play();
+            // })
         }
         if (this.move.backward){
             velocity.z -= this.acceleration.z * timeInSeconds;
@@ -560,6 +562,45 @@ const zombie = new CharacterController(0);
 zombie.loadAnimatedModel();
 
 
+
+////////////////WORKING OUT ANIMATIONS//////////////////
+const fbxLoader = new FBXLoader();
+let playerModel;
+
+
+const playerMixer = new THREE.AnimationMixer();
+const playerActions = {};
+
+const loadAnimation=(name, path)=>{
+    fbxLoader.load(path, (animObject)=>{
+        const clip = animObject.animations[0];
+        const action = playerMixer.clipAction(clip, playerModel);
+        playerActions[name] = action;
+    });
+}
+
+fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
+    
+    fbx.scale.setScalar(0.04);
+    scene.add(fbx);
+    playerModel = fbx;
+
+    loadAnimation('idle', 'resources/animations/zombie-idle.fbx');
+    loadAnimation('walk', 'resources/animations/zombie-run.fbx');
+
+});
+
+
+document.addEventListener('keydown', (event)=>{
+    if (event.key == '1' && playerActions['idle']){
+        playerActions['walk']?.stop(); //stop other animation
+        playerActions['idle'].reset().play(); //play idle animation
+    }
+    else if(event.key == '2' && playerActions['walk']){
+        playerActions['idle']?.stop(); //stop other animation
+        playerActions['walk'].reset().play(); //play walk animation
+    }
+});
 
 ///////////////INPUT STUFF///////////////////
 
