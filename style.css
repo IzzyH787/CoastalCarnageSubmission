@@ -23,8 +23,8 @@ h1{
 }
 
 nav {
-    display: flex;
-    justify-content: space-between;
+    display: flex; /*allows to mainpulate alignment and spacing in container*/
+    justify-content: space-between; /*aligns and distributes flex items along axis of flex container*/
     align-items: center;
   
     padding: 0 50px;
@@ -76,14 +76,14 @@ nav {
 
   .progress-bar-container{
     position: absolute;
-    left: 50;
-    top: 50%;
-    transform: translate(0%, -50%);
+    left: 50%; /*push away from left by 50%*/
+    top: 50%; /*push away from top by 50%*/
+    transform: translate(-50%, -50%); /*move down 50% in parent container*/
     width: 100%;
     height: 100%;
     background-color: rgba(2, 35, 58, 0.8);
-    display: flex;
-    flex-direction: column;
+    display: flex; /*allows to mainpulate alignment and spacing in container*/
+    flex-direction: column; /*sets how flex items are placed in the flex container defining the main axis and the direction */
     justify-content: center;
     align-items: center;
   }
