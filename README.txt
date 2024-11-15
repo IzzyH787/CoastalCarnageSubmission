@@ -5,6 +5,13 @@ Title: Coastal Carnage
 
 Description: Wave survival game where players must try and survive as long as possible against hoards of enemies invading the beach.
 
+
+How to Play:
+Open Coastal Carnage folder with Visual Studio and run index.html with Live Server 
+OR
+Paste this URL into Chrome: https://izzyh787.github.io/CoastalCarnageSubmission/
+
+
 Controls:
 WASD- Movement
 Space- Jump
