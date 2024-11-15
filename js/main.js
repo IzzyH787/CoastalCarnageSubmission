@@ -270,7 +270,7 @@ const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00ff, velocity
 player.castShadow = true;
 scene.add(player);
 
-
+//character controller class
 class CharacterController{
     constructor(params){
         this.Init(params); //initalise values
@@ -434,7 +434,7 @@ class CharacterController{
 
 }
 
-
+//create player zombie
 const zombie = new CharacterController(0);
 zombie.loadModel();
 
