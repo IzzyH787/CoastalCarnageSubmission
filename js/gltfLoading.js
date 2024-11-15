@@ -4,6 +4,51 @@ let mixer;
 let chickenAnimations = []; //store chicken model's animations
 let chickenState;
 const clock = new THREE.Clock();
+
+
+//GLTF
+
+
+const addModel=(fileName, scale, model, animationsArray)=>{
+    const gltfloader  = new GLTFLoader(loadingManager).setPath("resources/3dmodels/");
+    // Load a glTF resource
+    gltfloader.load(
+        fileName,  // called when the resource is loaded
+    
+        (gltf) => {
+            model = gltf.scene;
+            model.scale.set(scale, scale, scale);
+            scene.add(model); //add GLTF to the scene
+
+            /////////////////WEEK 6////////////////
+            //play animation
+            mixer = new THREE.AnimationMixer(model);
+            gltf.animations.forEach((clip) => {
+                //mixer.clipAction(clip).play();
+                animationsArray.push(mixer.clipAction(clip));
+                //console.log(clip);
+        });
+            //////////////////////////////////////
+    
+        },
+        // called when loading is in progresses
+    
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    
+        },
+        // called when loading has errors
+    
+        (error) => {
+            console.log('An error happened' + error);
+        }
+    );
+    //model.position.set(0,4,0);
+
+}
+
+
+
 addModel('chicken.gltf', 0.5, chicken, chickenAnimations);
 
 const displayPeck=()=>{

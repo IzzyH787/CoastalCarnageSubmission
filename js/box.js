@@ -69,6 +69,7 @@ export class Box extends THREE.Mesh{
     }
 }
 
+//check if 2 boxes overlap
 export const boxCollision=({box1, box2})=>{
     const xCollision = ( (box1.rightPosition >= box2.leftPosition) && (box1.leftPosition <= box2.rightPosition) );
     //frame ahead for y collision, gravity

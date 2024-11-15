@@ -1,3 +1,4 @@
+////////////////IMPORTS///////////////////////////
 import * as THREE from 'three'; //import three.js
 
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -10,12 +11,14 @@ import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.modul
 
 import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision} from './box.js';
+import { createEnemy} from './enemy.js';
+
 
 ///////////CREATING LOADING SCREEN///////////
 
 //create loading manager 
 const loadingManager = new THREE.LoadingManager();
-//get progress bar elemt from index.html
+//get progress bar elemENt from index.html
 const progressBar = document.getElementById('progress-bar');
 const progressBarContainer = document.querySelector('.progress-bar-container');
 //called for each item loaded by loader
@@ -62,25 +65,27 @@ stats = new Stats();
 document.body.appendChild(stats.dom);
 
 //////////////DECLARING VARIABLES///////////////
+let frames = 0; //stores amount of frames that have passed
+let spawnRate = 500; //how many frames until another enemy will spawn
+let speed = 0.05;
+const enemies = []; //create array to store enemies
 
-
-let playerDrowned = false;
-let waterParticles;
+let playerDrowned = false; 
+let waterParticles; //variable for particle effects
 
 let playerIsDead = false;
 let playerHealth = 10;
 const playerMaxHealth = 10;
+//initial UI display of player health
 let healthText = "Health: ";
 healthText = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
 document.getElementById("health-display").innerHTML = healthText;
 
+
+//initialise timers
 const clock = new THREE.Clock();
 const timer = new Timer();
 const startTime = Date.now();
-
-
-
-
 
 
 //////////////DEFINING FUNCTIONS///////////////////
@@ -97,41 +102,14 @@ const animateWaterPlane = (geometry, count) => {
     }
     geometry.computeVertexNormals(); //recalculate vertex normals so shadows look correct
     geometry.attributes.position.needsUpdate = true; //update position of vertices
-    waterTexture.offset.y += 0.0005;
+    waterTexture.offset.y += 0.0005; //offset texture to give appearance of moving water
 }
 
-// const checkInput=()=>{
-//     //move left
-//     if (keys.a.pressed){
-//         player.velocity.x = -speed;
-//         zombie.characterModel.position.x -= speed;
-//     } 
-//     //move right
-//     else if (keys.d.pressed){
-//         player.velocity.x = speed; 
-//         zombie.characterModel.position.x += speed;
-//     } 
-
-//     //separate if for axis allows them to be true at same time
-
-//     //move forward
-//     if (keys.w.pressed){
-//         player.velocity.z = speed;
-//         zombie.characterModel.position.z += speed;
-//     } 
-//     //move backward
-//     else if (keys.s.pressed){
-//         player.velocity.z = -speed; 
-//         zombie.characterModel.position.z -= speed;
-//     } 
-// }
 
 const movePlayer=()=>{
     //movement code
     player.velocity.x = 0 //stop player at start of frame
     player.velocity.z = 0 //stop player at start of frame
-
-    //checkInput();
 
     //check if player walks into wall
     if (boxCollision({box1: player, box2: wallLeft})){
@@ -151,50 +129,33 @@ const movePlayer=()=>{
         player.position.z += speed;
         player.velocity.z = 0;
     }
+
+
     //check if player falls in water
     if (player.position.y < ground.position.y && !playerDrowned){
+        //create water partucle effect
         waterParticles = createPointGeometry(scene, player.position.x, player.position.y, player.position.z, 2);
         console.log('drowned');
-        playerDrowned = true;
-        playerIsDead = true;
-        playerHealth = 0;
+        playerDrowned = true; //set player has now drowned
+        playerIsDead = true; //player is now dead
+        playerHealth = 0; //zero player health
+        //update health on UI
         healthText = "Health: "
         document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
     }
 }
 
-const createEnemy=()=>{
-    const newEnemy = new Box({
-        width: 1, 
-        height: 1,
-        depth: 1,
-        color: 0xffff00,
-        velocity: {x: 0, y: -0.01, z:0.005},
-        //Math.random() generates random value 0-1
-        pos: {x: Math.random() - 0.5 * 20, y: 3, z: -10}
-    });
-    newEnemy.castShadow = true;
-    scene.add(newEnemy); //add to scene
-    enemies.push(newEnemy); //add to enemy array
-}
 
 //function to animate geometry
-let frames = 0;
-let spawnRate = 500;
-let speed = 0.05;
-
 
 
 function animate() {
 
     //update animation mixer
     var delta = clock.getDelta();
+    //update zombie animation mixer
     if (zombie.characterMixer) zombie.characterMixer.update(delta);
-    zombie.Update(delta);
-
-
-
-    //if (playerMixer)playerMixer.update(delta);
+    zombie.Update(); //update zombie object
 
     //update stats (fps) display
     stats.update();
@@ -204,16 +165,18 @@ function animate() {
 
     //const animationId = requestAnimationFrame(animate);
 
-    movePlayer(); //check if player moves this frame
 
+    /////////////WILL BE REDONE//////////////////
+    movePlayer(); //check if player (cube) moves this frame
     //check position of player for collisions
     player.update(ground);
+
 
     //update enemy
     enemies.forEach((enemy) => {
     enemy.update(ground);
 
-    //check for collision between player and enemy
+    //check for collision between player (cube) and enemy
     if (boxCollision({box1: player, box2: enemy})){
         console.log("boom");
         playerHealth--;
@@ -226,16 +189,18 @@ function animate() {
 
     //if enough frames passed since last spawn
     if (frames % spawnRate == 0){
-        createEnemy();
+        createEnemy(scene, enemies); //spawn another enemy
     }
 
 
     renderer.render(scene, camera); //render scene
     frames++; //increment frame number
 
-    let timerText = "Timer: ";
+    let timerText = "Timer: "; //reset time UI text
 
+    //if player is not dead
     if (!playerIsDead){
+        //update timer
         document.getElementById("timer-display").innerHTML = timerText.concat((Date.now() - startTime) /1000);
     }
     
@@ -262,14 +227,20 @@ const ground = new Box({width: 200, height: 0.5, depth: 150, color: 0xF0E8DC, po
 ground.receiveShadow = true;
 scene.add(ground);
 
-const sandTexture = new THREE.TextureLoader(loadingManager).load('resources/images/sand.jpg');
+//create skybox
+createSkybox(scene);
 
+//load sand texture from external file
+const sandTexture = new THREE.TextureLoader(loadingManager).load('resources/images/sand.jpg');
+//ensure texture repeats if offset
 sandTexture.wrapS = THREE.RepeatWrapping;
 sandTexture.wrapT = THREE.RepeatWrapping;
-sandTexture.repeat.set( 2, 2 );
-
+sandTexture.repeat.set( 2, 2 ); //how many times texture repeats across plane
+//initialise properties for sand material
 const sandPlaneMaterialProperties = {map: sandTexture, side: THREE.DoubleSide, transparent: true, repeat: 10};
+//add sand plane to scene
 const sandPlane = addPlane(0,ground.topPosition + 0.01, 200, 150, sandPlaneMaterialProperties, scene);
+//position so appears above ground
 sandPlane.position.z = -30;
 
 
@@ -280,13 +251,13 @@ scene.add(waterPlane);
 const wallLeft = new Box({width: 10, height: 10, depth: 120, color: 0xccccc, pos: {x: -80, y: 0, z:-10}});
 const wallRight = new Box({width: 10, height: 10, depth: 120, color: 0xccccc, pos: {x: 80, y: 0, z:-10}});
 const wallBack = new Box({width: 200, height: 10, depth: 10, color: 0xccccc, pos: {x: 0, y: 0, z:-70}});
-let walls = new THREE.Group();
+let walls = new THREE.Group(); //group all walls together
 walls.add(wallLeft);
 walls.add(wallRight);
 walls.add(wallBack);
 scene.add(walls);
 
-//add trees to scene
+//add trees to scene in random places NEEDS EDITTING
 for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
     const xPos = Math.random() * (80 - -80) - 80;
     const zPos = Math.random() * (30 - -60) + (-60);
@@ -294,117 +265,40 @@ for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
 }
 
 
-
-
-
-
-
-//create player
-const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00f, velocity: {x: 0, y: -0.01, z:0}, pos: {x: 0, y: 3, z: 0}});
+//create player cube
+const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00ff, velocity: {x: 0, y: -0.01, z:0}, pos: {x: 0, y: 3, z: 0}});
 player.castShadow = true;
 scene.add(player);
-
-const enemies = []; //create array to store enemies
-
-//create skybox
-createSkybox(scene);
-
-
-
-
-let change = false;
-//change colour
-
-if (player.position.y > 1 && !change){
-    player.material.color.setHex(0xEC6E18);
-    change = true;
-}
-
-//GLTF
-
-
-const addModel=(fileName, scale, model, animationsArray)=>{
-    const gltfloader  = new GLTFLoader(loadingManager).setPath("resources/3dmodels/");
-    // Load a glTF resource
-    gltfloader.load(
-        fileName,  // called when the resource is loaded
-    
-        (gltf) => {
-            model = gltf.scene;
-            model.scale.set(scale, scale, scale);
-            scene.add(model); //add GLTF to the scene
-
-            /////////////////WEEK 6////////////////
-            //play animation
-            mixer = new THREE.AnimationMixer(model);
-            gltf.animations.forEach((clip) => {
-                //mixer.clipAction(clip).play();
-                animationsArray.push(mixer.clipAction(clip));
-                //console.log(clip);
-        });
-            //////////////////////////////////////
-    
-        },
-        // called when loading is in progresses
-    
-        (xhr) => {
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    
-        },
-        // called when loading has errors
-    
-        (error) => {
-            console.log('An error happened' + error);
-        }
-    );
-    //model.position.set(0,4,0);
-
-}
-
 
 
 class CharacterController{
     constructor(params){
-        this.Init(params);
+        this.Init(params); //initalise values
     }
 
     Init = (params) => {
         this.params = params;
+        //moving states
         this.move = {
             forward: false,
             backward: false,
             left: false,
             right: false
         };
-        this. decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
-        this.acceleration = new THREE.Vector3(1, 0.25, 50.0);
-        this.velocity = new THREE.Vector3(0,0,0);
-        this.pos = new THREE.Vector3(0,0,0);
 
-        //input stuffs
+        //input listeners
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
 
         //Animation stuffs
-        this.fbxLoader = new FBXLoader();
-        this.characterModel;
+        this.fbxLoader = new FBXLoader(loadingManager);
+        this.characterModel; //variable to store fbx mesh
 
-        this.characterMixer = new THREE.AnimationMixer;
-        this.characterActions = {};
-
-
-        // this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
-        //     fbx.scale.setScalar(0.04);
-        //     scene.add(fbx);
-        //     this.characterModel = fbx;
-
-        //     loadCharacterAnimation('idle', 'resources/animations/zombie-idle.fbx');
-        //     loadCharacterAnimation('walk', 'resources/animations/zombie-run.fbx');
-
-        // });
+        this.characterMixer = new THREE.AnimationMixer; //animation mixel for model
+        this.characterActions = {}; //array of all animation actions
         
     }
-
+    //called when key is pressed
     onKeyDown = (event) =>{
         switch(event.keyCode){
             case 87: //w
@@ -419,14 +313,11 @@ class CharacterController{
             case 68: //d
                 this.move.right = true;
                 break;
-            case 38: //up
-            case 37: //left
-            case 40: //down
-            case 39: //right
+
                 break;
         }
     }
-
+    //called when key is released
     onKeyUp = (event) =>{
         switch(event.keyCode){
             case 87: //w
@@ -441,112 +332,70 @@ class CharacterController{
             case 68: //d
                 this.move.right = false;
                 break;
-            case 38: //up
-            case 37: //left
-            case 40: //down
-            case 39: //right
-                break;
         }
     }
 
-    
-    // loadCharacterAnimation=(name, path)=>{
-    //     this.fbxLoader.load(path, (animObject)=>{
-    //         const clip = animObject.animations[0];
-    //         const action = this.characterMixer.clipAction(clip, this.characterModel);
-    //         this.characterActions[name] = action;
-    //     });
-    // }
-
+    //load fbx model and animaitons
     loadModel=()=>{
+        //load fbx
         this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
-            fbx.scale.setScalar(0.04);
-            fbx.position.set(0, -3, 0);
-            scene.add(fbx);
-            this.characterModel = fbx;
+            fbx.scale.setScalar(0.04); //scale model down ot reasonavle size
+            fbx.position.set(0, -3, 0); //make model level with floor
+            scene.add(fbx); //add to scene
+            this.characterModel = fbx; //assign model attribute to fbx model
 
 
             //load idle animation
             this.fbxLoader.load('resources/animations/zombie-idle.fbx', (animObject)=>{
-                const clip = animObject.animations[0];
-                const action = this.characterMixer.clipAction(clip, this.characterModel);
-                this.characterActions['idle'] = action;
+                const clip = animObject.animations[0]; //get clip
+                const action = this.characterMixer.clipAction(clip, this.characterModel); //get action
+                this.characterActions['idle'] = action; //add to actions array
             });
 
             //load idle animation
             this.fbxLoader.load('resources/animations/zombie-run.fbx', (animObject)=>{
-                const clip = animObject.animations[0];
-                const action = this.characterMixer.clipAction(clip, this.characterModel);
-                this.characterActions['walk'] = action;
+                const clip = animObject.animations[0]; //get clip
+                const action = this.characterMixer.clipAction(clip, this.characterModel); //get animation
+                this.characterActions['walk'] = action; //add action to array
             });
         });
     }
 
 
-    Update(timeInSeconds){
-        // const velocity = this.velocity;
-        // const frameDecceleration = new THREE.Vector3(
-        //     velocity.x * this.decceleration.x,
-        //     velocity.y * this.decceleration.y,
-        //     velocity.z * this.decceleration.z
-        // );
-        // frameDecceleration.multiplyScalar(timeInSeconds);
-        // frameDecceleration.z = Math.sign(frameDecceleration) * Math.min(Math.abs(frameDecceleration.z), Math.abs(velocity.z));
-        // velocity.add(frameDecceleration);
-
-        // const controlObject = this.params.target;
-        // const Q = new THREE.Quaternion();
-        // const A = new THREE.Vector3();
-        //const R = controlObject.Quaternion.clone();
-
+    Update(){
 
         //handling inputs
         if (this.move.forward){
-
-            ///////////////velocity calculation doesn't work/////////////////
-            //this.velocity.z += this.acceleration.z * timeInSeconds;
-            //console.log (velocity.z);
-
-            this.characterModel.position.z -= speed;
-
+            this.characterModel.position.z -= speed; //move model in scene
+            //change animation to walking
             if (this.characterActions['walk']){
-                console.log('anim maybe');
                 this.characterActions['idle']?.stop(); //stop other animation
                 this.characterActions['walk'].play(); //play idle animation
             }
-
             //rotate player model
             this.characterModel.rotation.y = Math.PI;
-
             //move player cube
             player.position.z -= speed;
         }
 
 
         else if (this.move.backward){
-            //velocity.z -= this.acceleration.z * timeInSeconds;
-            this.characterModel.position.z += speed;
-
+            this.characterModel.position.z += speed; //move model in scene
+            //change animation to walking
             if (this.characterActions['walk']){
-                console.log('anim maybe');
                 this.characterActions['idle']?.stop(); //stop other animation
                 this.characterActions['walk'].play(); //play idle animation 
             }
-
             //rotate player model
             this.characterModel.rotation.y = 0;
-
             //move player cube
             player.position.z += speed;
-
         }
 
-
         else if (this.move.right){
-            //velocity.x += this.acceleration.x * timeInSeconds;
-            this.characterModel.position.x += speed;
+            this.characterModel.position.x += speed; //move model in scene
+            //change animation to walking
             if (this.characterActions['walk']){
-                console.log('anim maybe');
                 this.characterActions['idle']?.stop(); //stop other animation
                 this.characterActions['walk'].play(); //play idle animation 
             }
@@ -562,22 +411,17 @@ class CharacterController{
 
 
         else if (this.move.left){
-            //velocity.x -= this.acceleration.x * timeInSeconds;
-            this.characterModel.position.x -= speed;
+            this.characterModel.position.x -= speed; //move model in scene
+            //change animation to walking
             if (this.characterActions['walk']){
-                console.log('anim maybe');
                 this.characterActions['idle']?.stop(); //stop other animation
                 this.characterActions['walk'].play(); //play idle animation 
             }
-
             //rotate player model
             this.characterModel.rotation.y = -Math.PI / 2;
-
             //move player cube
             player.position.x -= speed;
-
         }
-
         else{
             //swap back to idle animation
             if (this.characterActions['idle']){
