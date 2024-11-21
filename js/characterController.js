@@ -171,7 +171,7 @@ export class CharacterController{
 
     loadModel=(scene)=>{
         //load fbx
-        this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
+        this.fbxLoader.load('resources/3dmodels/goblin.fbx', (fbx)=>{
             fbx.scale.setScalar(0.04); //scale model down ot reasonavle size
             fbx.position.copy(this.position); //match position of model to obejct
             scene.add(fbx); //add to scene
@@ -179,7 +179,7 @@ export class CharacterController{
 
 
             //load idle animation
-            this.fbxLoader.load('resources/animations/zombie-idle.fbx', (animObject)=>{
+            this.fbxLoader.load('resources/animations/player-idle.fbx', (animObject)=>{
                 const clip = animObject.animations[0]; //get clip
                 const action = this.characterMixer.clipAction(clip, this.characterModel); //get action
                 this.characterActions['idle'] = action; //add to actions array
@@ -188,7 +188,7 @@ export class CharacterController{
             });
 
             //load idle animation
-            this.fbxLoader.load('resources/animations/zombie-run.fbx', (animObject)=>{
+            this.fbxLoader.load('resources/animations/player-walk.fbx', (animObject)=>{
                 const clip = animObject.animations[0]; //get clip
                 const action = this.characterMixer.clipAction(clip, this.characterModel); //get animation
                 this.characterActions['walk'] = action; //add action to array
