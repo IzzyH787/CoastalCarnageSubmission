@@ -1,0 +1,87 @@
+3:23:32 PM  [main] 	Initializing Control Panel
+3:23:32 PM  [main] 	Windows Version:  Home  64-bit
+3:23:32 PM  [main] 	XAMPP Version: 8.2.12
+3:23:32 PM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+3:23:32 PM  [main] 	You are not running with administrator rights! This will work for
+3:23:32 PM  [main] 	most application stuff but whenever you do something with services
+3:23:32 PM  [main] 	there will be a security dialogue or things will break! So think 
+3:23:32 PM  [main] 	about running this application with administrator rights!
+3:23:32 PM  [main] 	XAMPP Installation Directory: "c:\users\isabe\downloads\nodejsprojectpackage\xampp\"
+3:23:32 PM  [main] 	Checking for prerequisites
+3:23:34 PM  [main] 	All prerequisites found
+3:23:34 PM  [main] 	Initializing Modules
+3:23:34 PM  [main] 	The FileZilla module is disabled
+3:23:34 PM  [main] 	The Mercury module is disabled
+3:23:34 PM  [main] 	Starting Check-Timer
+3:23:34 PM  [main] 	Control Panel Ready
+3:23:40 PM  [Apache] 	Attempting to start Apache app...
+3:23:44 PM  [Apache] 	Attempting to start Apache app...
+3:23:44 PM  [Apache] 	Status change detected: running
+3:23:45 PM  [Apache] 	Status change detected: stopped
+3:23:45 PM  [Apache] 	Error: Apache shutdown unexpectedly.
+3:23:45 PM  [Apache] 	This may be due to a blocked port, missing dependencies, 
+3:23:45 PM  [Apache] 	improper privileges, a crash, or a shutdown by another method.
+3:23:45 PM  [Apache] 	Press the Logs button to view error logs and check
+3:23:45 PM  [Apache] 	the Windows Event Viewer for more clues
+3:23:45 PM  [Apache] 	If you need more help, copy and post this
+3:23:45 PM  [Apache] 	entire log window on the forums
+3:23:46 PM  [Apache] 	Attempting to start Apache app...
+3:24:20 PM  [Apache] 	Status change detected: running
+3:24:20 PM  [Apache] 	Status change detected: stopped
+3:24:20 PM  [Apache] 	Error: Apache shutdown unexpectedly.
+3:24:20 PM  [Apache] 	This may be due to a blocked port, missing dependencies, 
+3:24:20 PM  [Apache] 	improper privileges, a crash, or a shutdown by another method.
+3:24:20 PM  [Apache] 	Press the Logs button to view error logs and check
+3:24:20 PM  [Apache] 	the Windows Event Viewer for more clues
+3:24:20 PM  [Apache] 	If you need more help, copy and post this
+3:24:20 PM  [Apache] 	entire log window on the forums
+3:25:09 PM  [mysql] 	Status change detected: running
+3:25:09 PM  [mysql] 	Status change detected: stopped
+3:25:09 PM  [mysql] 	Error: MySQL shutdown unexpectedly.
+3:25:09 PM  [mysql] 	This may be due to a blocked port, missing dependencies, 
+3:25:09 PM  [mysql] 	improper privileges, a crash, or a shutdown by another method.
+3:25:09 PM  [mysql] 	Press the Logs button to view error logs and check
+3:25:09 PM  [mysql] 	the Windows Event Viewer for more clues
+3:25:09 PM  [mysql] 	If you need more help, copy and post this
+3:25:09 PM  [mysql] 	entire log window on the forums
+3:27:24 PM  [Apache] 	Status change detected: running
+3:27:25 PM  [Apache] 	Status change detected: stopped
+3:27:25 PM  [Apache] 	Error: Apache shutdown unexpectedly.
+3:27:25 PM  [Apache] 	This may be due to a blocked port, missing dependencies, 
+3:27:25 PM  [Apache] 	improper privileges, a crash, or a shutdown by another method.
+3:27:25 PM  [Apache] 	Press the Logs button to view error logs and check
+3:27:25 PM  [Apache] 	the Windows Event Viewer for more clues
+3:27:25 PM  [Apache] 	If you need more help, copy and post this
+3:27:25 PM  [Apache] 	entire log window on the forums
+3:36:57 PM  [main] 	Deinitializing Modules
+3:36:57 PM  [main] 	Deinitializing Control Panel
+
+4:38:12 PM  [main] 	Initializing Control Panel
+4:38:12 PM  [main] 	Windows Version:  Home  64-bit
+4:38:12 PM  [main] 	XAMPP Version: 8.2.12
+4:38:12 PM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+4:38:12 PM  [main] 	You are not running with administrator rights! This will work for
+4:38:12 PM  [main] 	most application stuff but whenever you do something with services
+4:38:12 PM  [main] 	there will be a security dialogue or things will break! So think 
+4:38:12 PM  [main] 	about running this application with administrator rights!
+4:38:12 PM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+4:38:12 PM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+4:38:12 PM  [main] 	Checking for prerequisites
+4:38:14 PM  [main] 	All prerequisites found
+4:38:14 PM  [main] 	Initializing Modules
+4:38:14 PM  [main] 	The FileZilla module is disabled
+4:38:14 PM  [main] 	The Mercury module is disabled
+4:38:14 PM  [main] 	Starting Check-Timer
+4:38:14 PM  [main] 	Control Panel Ready
+4:38:15 PM  [Apache] 	Attempting to start Apache app...
+4:38:16 PM  [Apache] 	Status change detected: running
+4:38:16 PM  [mysql] 	Attempting to start MySQL app...
+4:38:16 PM  [mysql] 	Status change detected: running
+4:58:32 PM  [mysql] 	Attempting to stop MySQL app...
+4:58:32 PM  [mysql] 	Status change detected: stopped
+4:58:32 PM  [Apache] 	Attempting to stop Apache (PID: 16028)
+4:58:32 PM  [Apache] 	Attempting to stop Apache (PID: 21068)
+4:58:33 PM  [Apache] 	Status change detected: stopped
+4:58:37 PM  [main] 	Deinitializing Modules
+4:58:37 PM  [main] 	Deinitializing Control Panel
+

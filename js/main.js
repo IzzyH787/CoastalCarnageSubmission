@@ -1,17 +1,17 @@
 ////////////////IMPORTS///////////////////////////
 import * as THREE from 'three'; //import three.js
 
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"; //add gltf loader
-import {FBXLoader} from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FBXLoader.js"
-import {Timer } from 'https://unpkg.com/three@0.169.0/examples/jsm/misc/Timer.js';
-//import { Timer } from 'three/addons/misc/Timer.js';
+import { FBXLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FBXLoader.js"
+import { Timer } from 'https://unpkg.com/three@0.169.0/examples/jsm/misc/Timer.js';
 
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
 import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
-import { Box, boxCollision} from './box.js';
-import { createEnemy} from './enemy.js';
+import { Box, boxCollision } from './box.js';
+import { createEnemy } from './enemy.js';
+import { CharacterController } from './characterController.js';
 
 
 ///////////CREATING LOADING SCREEN///////////
@@ -48,7 +48,9 @@ renderer.shadowMap.enabled = true; //allows objects to cast shadows
 //get DOM element by ID or canvas rendering
 const canvas = document.querySelector('#scene-container');
 canvas.appendChild(renderer.domElement);
-
+//setting up camera
+camera.position.set(0, 15, 20);
+camera.rotation.set(-Math.PI /4, 0, 0);
 //create orbit controls
 
 let controls;
@@ -57,7 +59,7 @@ const createOrbitControls=()=>{
     controls.target.set(0, 0, 0);
     controls.update();
 }
-createOrbitControls();
+//createOrbitControls();
 
 //tracking stats for game
 let stats;
@@ -107,28 +109,28 @@ const animateWaterPlane = (geometry, count) => {
 
 
 const movePlayer=()=>{
-    //movement code
-    player.velocity.x = 0 //stop player at start of frame
-    player.velocity.z = 0 //stop player at start of frame
+    // //movement code
+    // player.velocity.x = 0 //stop player at start of frame
+    // player.velocity.z = 0 //stop player at start of frame
 
-    //check if player walks into wall
-    if (boxCollision({box1: player, box2: wallLeft})){
-        player.velocity.x = 0;
-        player.position.x += speed;
-        player.velocity.z = 0;
-    }
+    // //check if player walks into wall
+    // if (boxCollision({box1: player, box2: wallLeft})){
+    //     player.velocity.x = 0;
+    //     player.position.x += speed;
+    //     player.velocity.z = 0;
+    // }
 
-    if (boxCollision({box1: player, box2: wallRight})){
-        player.velocity.x = 0;
-        player.position.x -= speed;
-        player.velocity.z = 0;
-    }
+    // if (boxCollision({box1: player, box2: wallRight})){
+    //     player.velocity.x = 0;
+    //     player.position.x -= speed;
+    //     player.velocity.z = 0;
+    // }
 
-    if (boxCollision({box1: player, box2: wallBack})){
-        player.velocity.x = 0;
-        player.position.z += speed;
-        player.velocity.z = 0;
-    }
+    // if (boxCollision({box1: player, box2: wallBack})){
+    //     player.velocity.x = 0;
+    //     player.position.z += speed;
+    //     player.velocity.z = 0;
+    // }
 
 
     //check if player falls in water
@@ -145,6 +147,11 @@ const movePlayer=()=>{
     }
 }
 
+const updateCamera=()=>{
+    //initial position 0, 3, 20
+    camera.position.set(0 + zombie.position.x, camera.position.y, 20 + zombie.position.z); //offset camera so doesn't spawn in model
+}
+
 
 //function to animate geometry
 
@@ -153,10 +160,12 @@ function animate() {
 
     //update animation mixer
     var delta = clock.getDelta();
-    //update zombie animation mixer
-    if (zombie.characterMixer) zombie.characterMixer.update(delta);
-    zombie.Update(); //update zombie object
 
+    //update zombie animation mixer
+    zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
+
+    updateCamera();
+    
     //update stats (fps) display
     stats.update();
 
@@ -177,7 +186,7 @@ function animate() {
     enemy.update(ground);
 
     //check for collision between player (cube) and enemy
-    if (boxCollision({box1: player, box2: enemy})){
+    if (boxCollision({box1: zombie, box2: enemy})){
         console.log("boom");
         playerHealth--;
         if (playerHealth < 0){playerHealth = 0;}
@@ -219,7 +228,6 @@ const onWindowResize=()=>{
 
 //set up scene
 window.addEventListener('resize', onWindowResize); //add event listener ofr when widnow resized to call method
-camera.position.set(0,3,20); //offset camera so doesn't spawn in model
 scene.add(new THREE.AmbientLight(0xffffff, 0.5)); //add ambient light to scene
 
 //create ground
@@ -270,181 +278,16 @@ const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00ff, velocity
 player.castShadow = true;
 scene.add(player);
 
-//character controller class
-class CharacterController{
-    constructor(params){
-        this.Init(params); //initalise values
-    }
-
-    Init = (params) => {
-        this.params = params;
-        //moving states
-        this.move = {
-            forward: false,
-            backward: false,
-            left: false,
-            right: false
-        };
-
-        //input listeners
-        document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
-        document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
-
-        //Animation stuffs
-        this.fbxLoader = new FBXLoader(loadingManager);
-        this.characterModel; //variable to store fbx mesh
-
-        this.characterMixer = new THREE.AnimationMixer; //animation mixel for model
-        this.characterActions = {}; //array of all animation actions
-        
-    }
-    //called when key is pressed
-    onKeyDown = (event) =>{
-        switch(event.keyCode){
-            case 87: //w
-                this.move.forward = true;             
-                break;
-            case 65: //a
-                this.move.left = true;;
-                break;
-            case 83: //s
-                this.move.backward = true;
-                break;
-            case 68: //d
-                this.move.right = true;
-                break;
-
-                break;
-        }
-    }
-    //called when key is released
-    onKeyUp = (event) =>{
-        switch(event.keyCode){
-            case 87: //w
-                this.move.forward = false;
-                 break;
-            case 65: //a
-                this.move.left = false;
-                break;
-            case 83: //s
-                this.move.backward = false;
-                break;
-            case 68: //d
-                this.move.right = false;
-                break;
-        }
-    }
-
-    //load fbx model and animaitons
-    loadModel=()=>{
-        //load fbx
-        this.fbxLoader.load('resources/3dmodels/zombie.fbx', (fbx)=>{
-            fbx.scale.setScalar(0.04); //scale model down ot reasonavle size
-            fbx.position.set(0, -3, 0); //make model level with floor
-            scene.add(fbx); //add to scene
-            this.characterModel = fbx; //assign model attribute to fbx model
-
-
-            //load idle animation
-            this.fbxLoader.load('resources/animations/zombie-idle.fbx', (animObject)=>{
-                const clip = animObject.animations[0]; //get clip
-                const action = this.characterMixer.clipAction(clip, this.characterModel); //get action
-                this.characterActions['idle'] = action; //add to actions array
-            });
-
-            //load idle animation
-            this.fbxLoader.load('resources/animations/zombie-run.fbx', (animObject)=>{
-                const clip = animObject.animations[0]; //get clip
-                const action = this.characterMixer.clipAction(clip, this.characterModel); //get animation
-                this.characterActions['walk'] = action; //add action to array
-            });
-        });
-    }
-
-
-    Update(){
-
-        //handling inputs
-        if (this.move.forward){
-            this.characterModel.position.z -= speed; //move model in scene
-            //change animation to walking
-            if (this.characterActions['walk']){
-                this.characterActions['idle']?.stop(); //stop other animation
-                this.characterActions['walk'].play(); //play idle animation
-            }
-            //rotate player model
-            this.characterModel.rotation.y = Math.PI;
-            //move player cube
-            player.position.z -= speed;
-        }
-
-
-        else if (this.move.backward){
-            this.characterModel.position.z += speed; //move model in scene
-            //change animation to walking
-            if (this.characterActions['walk']){
-                this.characterActions['idle']?.stop(); //stop other animation
-                this.characterActions['walk'].play(); //play idle animation 
-            }
-            //rotate player model
-            this.characterModel.rotation.y = 0;
-            //move player cube
-            player.position.z += speed;
-        }
-
-        else if (this.move.right){
-            this.characterModel.position.x += speed; //move model in scene
-            //change animation to walking
-            if (this.characterActions['walk']){
-                this.characterActions['idle']?.stop(); //stop other animation
-                this.characterActions['walk'].play(); //play idle animation 
-            }
-
-            //rotate player model
-            this.characterModel.rotation.y = Math.PI / 2;
-
-            //move player cube
-            player.position.x += speed;
-
-        }
-
-
-
-        else if (this.move.left){
-            this.characterModel.position.x -= speed; //move model in scene
-            //change animation to walking
-            if (this.characterActions['walk']){
-                this.characterActions['idle']?.stop(); //stop other animation
-                this.characterActions['walk'].play(); //play idle animation 
-            }
-            //rotate player model
-            this.characterModel.rotation.y = -Math.PI / 2;
-            //move player cube
-            player.position.x -= speed;
-        }
-        else{
-            //swap back to idle animation
-            if (this.characterActions['idle']){
-                this.characterActions['walk']?.stop(); //stop other animation
-                this.characterActions['idle'].play(); //play idle animation 
-            }
-        }
-    }
-
-
-}
 
 //create player zombie
-const zombie = new CharacterController(0);
-zombie.loadModel();
+const zombie = new CharacterController({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: 0, y: -3, z: 0}, speed: 0.01, manager: loadingManager});
+zombie.loadModel(scene);
 
 
 ///////////////INPUT STUFF///////////////////
 
 const keysPressed = { };
-// document.addEventListener('keydown', (event) => {
-//     (keysPressed as any)[event.key.toLowerCase()] = true
-// }, false);
+
 
 const keys = {
     a: {
