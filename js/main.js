@@ -59,7 +59,7 @@ const createOrbitControls=()=>{
     controls.target.set(0, 0, 0);
     controls.update();
 }
-//createOrbitControls();
+createOrbitControls();
 
 //tracking stats for game
 let stats;
@@ -68,7 +68,7 @@ document.body.appendChild(stats.dom);
 
 //////////////DECLARING VARIABLES///////////////
 let frames = 0; //stores amount of frames that have passed
-let spawnRate = 500; //how many frames until another enemy will spawn
+let spawnRate = 100; //how many frames until another enemy will spawn
 let speed = 0.05;
 const enemies = []; //create array to store enemies
 
@@ -164,7 +164,7 @@ function animate() {
     //update zombie animation mixer
     zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
 
-    updateCamera();
+    //updateCamera();
     
     //update stats (fps) display
     stats.update();

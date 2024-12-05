@@ -53,10 +53,14 @@ export class CharacterController{
         //Animation stuff
         this.fbxLoader = new FBXLoader(manager);
         this.characterModel; //variable to store fbx mesh
+        this.swordModel;
 
         this.characterMixer = new THREE.AnimationMixer; //animation mixel for model
         this.characterActions = {}; //array of all animation actions
         this.activeAction;
+
+
+
         
     }
 
@@ -187,13 +191,27 @@ export class CharacterController{
                 action.play(); //start playing idle animation
             });
 
-            //load idle animation
+            //load walk animation
             this.fbxLoader.load('resources/animations/player-walk.fbx', (animObject)=>{
                 const clip = animObject.animations[0]; //get clip
                 const action = this.characterMixer.clipAction(clip, this.characterModel); //get animation
                 this.characterActions['walk'] = action; //add action to array
             });
         });
+
+        //load sword model
+
+        this.fbxLoader.load('resources/3dmodels/sword.fbx', (fbx)=>{
+            fbx.scale.setScalar(2); //scale model down ot reasonavle size
+            fbx.position.copy(this.position); //match position of model to obejct
+            fbx.position.y += 2.5 //line handle up with hands;
+            fbx.rotation.x += Math.PI / 4;
+            scene.add(fbx); //add to scene
+            this.swordModel = fbx; //assign model attribute to fbx model
+        });
+
+
+
         this.ready = true; //all animations now loaded
     }
 
@@ -230,6 +248,7 @@ export class CharacterController{
             this.updateAnimation('walk');
             //rotate player model
             this.characterModel.rotation.y = Math.PI;
+            console.log(this.characterModel.rotation);
         }
 
 
@@ -268,7 +287,42 @@ export class CharacterController{
         //update character model positon to object position
         if (this.characterModel){
             this.characterModel.position.copy(this.position);
-            //console.log(this.position, this.characterModel.position);
+        }
+
+        //update sword model positon to object position
+        if (this.swordModel){
+            this.swordModel.position.copy(this.position);
+            this.swordModel.position.y += 3; //align handle with height of hands
+            this.swordModel.rotation.copy(this.characterModel.rotation);
+            this.swordModel.rotation.x += Math.PI / 4;
+            //move offset of sword depending on player rotation
+            const forwardOffset = 1.5; //match handle to position of hands
+            const horizontalOffset = 1;
+            //w pressed
+            if (this.characterModel.rotation.y == Math.PI){
+                this.swordModel.position.z -= forwardOffset;
+                this.swordModel.position.x += horizontalOffset;
+                //this.swordModel.rotation.x -= Math.PI / 4;
+            }
+            //s pressed
+            else if (this.characterModel.rotation.y == 0){
+                this.swordModel.position.z += forwardOffset;
+                this.swordModel.position.x -= horizontalOffset;
+
+                //this.swordModel.rotation.x += Math.PI / 4;
+            }
+            //a pressed
+            else if (this.characterModel.rotation.y == -Math.PI / 2){
+                this.swordModel.position.x -= forwardOffset;
+                this.swordModel.position.z -= horizontalOffset;
+                //this.swordModel.rotation.z += Math.PI / 4;
+            }
+            //d pressed
+            else if (this.characterModel.rotation.y == Math.PI / 2){
+                this.swordModel.position.x += forwardOffset;
+                this.swordModel.position.z += horizontalOffset;
+                //this.swordModel.rotation.z -= Math.PI / 4;
+            }
         }
 
         this.applyGravity(ground);

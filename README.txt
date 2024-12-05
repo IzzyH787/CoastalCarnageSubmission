@@ -34,6 +34,8 @@ Water Texture: https://www.vecteezy.com/vector-art/1844212-water-texture-top-vie
 Sky texture:
 Sand texture: https://www.the3rdsequence.com/texturedb/texture/43/smooth+sand+dunes/
 Trunk texture:
+Sword: Long Sword by ImForth [CC-BY] via Poly Pizza
+
 
 Models:
 Zombie: mixamo.com

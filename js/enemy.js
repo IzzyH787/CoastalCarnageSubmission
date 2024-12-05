@@ -8,7 +8,7 @@ export const createEnemy=(scene, enemies)=>{
         color: 0xffff00,
         velocity: {x: 0, y: -0.01, z:0.005},
         //Math.random() generates random value 0-1
-        pos: {x: Math.random() - 0.5 * 20, y: 3, z: -10}
+        pos: {x: Math.random() * (50 - -50) + -50, y: 3, z: -10}
     });
     newEnemy.castShadow = true;
     scene.add(newEnemy); //add to scene
