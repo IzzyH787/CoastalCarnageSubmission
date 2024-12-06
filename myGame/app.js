@@ -5,6 +5,10 @@ const path = require('path');
 
 var mysql = require('mysql');
 
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
+
+
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -51,4 +55,10 @@ app.get('/index', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+});
+
+
+//decode json in route 
+app.post('api/users', jsonParser, (req, res)=>{
+  //create user
 });
