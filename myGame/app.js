@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const path = require('path');
 
 var mysql = require('mysql');
 
@@ -20,22 +21,34 @@ con.connect(function(err) {
   });
 });
 
+//serve static files, includes other files
+app.use(express.static(path.join(__dirname, 'static')));
+//app.use(express.static(path.join(__dirname, 'js')));
+
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+  res.send('Hello World!');
+});
 
-app.get('/some', (req, res) => {
-    res.send('Change a word!')
-  })
+app.get('/index', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+  });
+  app.get('/login', (req, res) => {
+    res.sendFile(__dirname + '/login.html');
+  });
+  app.get('/register', (req, res) => {
+    res.sendFile(__dirname + '/register.html');
+  });
+  app.get('/game', (req, res) => {
+    res.sendFile(__dirname + '/game.html');
+  });
 
-  app.get('/boo', (req, res) => {
-    res.send('BOO!')
-  })
 
-  app.get('/test', (req, res) => {
-    res.send('This is test page')
-  })
+  app.get('*', (req, res) => {
+    //_dirname
+    console.log(__dirname);
+    res.status(404).sendFile(__dirname + '/error404.html');
+  });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+  console.log(`Example app listening at http://localhost:${port}`);
+});
