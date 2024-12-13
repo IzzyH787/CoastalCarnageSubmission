@@ -124,6 +124,13 @@ export class CharacterController{
             this.velocity.z = 0;
         }
     }
+    checkForTree=(tree)=>{
+        if (this.hasBoxCollision({box1: this, box2: tree})){
+            this.velocity.x = 0;
+            this.position.z += this.speed;
+            this.velocity.z = 0;
+        }
+    }
 
 
 

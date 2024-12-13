@@ -8,7 +8,7 @@ import { Timer } from 'https://unpkg.com/three@0.169.0/examples/jsm/misc/Timer.j
 
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
-import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
+import { Tree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision } from './box.js';
 import { Enemy, spawnEnemy } from './enemy.js';
 import { CharacterController } from './characterController.js';
@@ -43,7 +43,8 @@ const loader = new THREE.TextureLoader(loadingManager);
 const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true}); //create renderer
 
 renderer.setSize( window.innerWidth, window.innerHeight ); //set size of renderer to window' size
-renderer.setAnimationLoop( animate ); //creates loop so renderer draws scene every time the screen refreshes
+
+
 renderer.shadowMap.enabled = true; //allows objects to cast shadows
 //get DOM element by ID or canvas rendering
 const canvas = document.querySelector('#scene-container');
@@ -73,6 +74,8 @@ let spawnRate = 1000; //how many frames until another enemy will spawn
 let enemyHealth = 10;
 let speed = 0.05;
 const enemies = []; //create array to store enemies
+
+const trees = []; //create array to store trees
 
 let playerDrowned = false; 
 let waterParticles; //variable for particle effects
@@ -111,28 +114,7 @@ const animateWaterPlane = (geometry, count) => {
 
 
 const movePlayer=()=>{
-    // //movement code
-    // player.velocity.x = 0 //stop player at start of frame
-    // player.velocity.z = 0 //stop player at start of frame
 
-    // //check if player walks into wall
-    // if (boxCollision({box1: player, box2: wallLeft})){
-    //     player.velocity.x = 0;
-    //     player.position.x += speed;
-    //     player.velocity.z = 0;
-    // }
-
-    // if (boxCollision({box1: player, box2: wallRight})){
-    //     player.velocity.x = 0;
-    //     player.position.x -= speed;
-    //     player.velocity.z = 0;
-    // }
-
-    // if (boxCollision({box1: player, box2: wallBack})){
-    //     player.velocity.x = 0;
-    //     player.position.z += speed;
-    //     player.velocity.z = 0;
-    // }
 
 
     //check if player falls in water
@@ -175,14 +157,18 @@ const updateDifficulty=()=>{
 //function to animate geometry
 
 
-function animate() {
+const animate=()=> {
     if(!isPaused){
         //update animation mixer
         var delta = clock.getDelta();
 
         //update zombie animation mixer
         zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
-
+        trees.forEach(tree => {
+            console.log("Tree position:");
+            console.log(tree.position);
+            zombie.checkForTree(tree);
+        });
         //updateCamera();
         
         //see if difficulty needs scaling
@@ -199,8 +185,8 @@ function animate() {
         /////////////WILL BE REDONE//////////////////
         movePlayer(); //check if player (cube) moves this frame
         //check position of player for collisions
-        player.update(ground);
 
+        //player.update(ground);
 
         //update enemy
         enemies.forEach((enemy) => {
@@ -215,6 +201,8 @@ function animate() {
             document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
             //cancelAnimationFrame(animationId);
         }
+
+
         })
 
         //if enough frames passed since last spawn
@@ -262,7 +250,7 @@ function animate() {
     }
     
 }
-
+renderer.setAnimationLoop( animate ); //creates loop so renderer draws scene every time the screen refreshes
 
 //redraw renderer when window is rescaled
 const onWindowResize=()=>{
@@ -276,7 +264,7 @@ const onWindowResize=()=>{
 
 //set up scene
 window.addEventListener('resize', onWindowResize); //add event listener ofr when widnow resized to call method
-scene.add(new THREE.AmbientLight(0xffffff, 0.5)); //add ambient light to scene
+scene.add(new THREE.AmbientLight(0xffffff, 3)); //add ambient light to scene
 
 //create ground
 const ground = new Box({width: 200, height: 0.5, depth: 150, color: 0xF0E8DC, pos: {x: 0, y: -3, z: -30} });
@@ -315,21 +303,25 @@ scene.add(walls);
 
 //add trees to scene in random places NEEDS EDITTING
 for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
-    const xPos = Math.random() * (80 - -80) - 80;
-    const zPos = Math.random() * (30 - -60) + (-60);
-    createTree(scene, xPos, 0, zPos);
+    const xPos = Math.random() * (70 - -70) - 70;
+    const zPos = Math.random() * (30 - -40) + (-40);
+    //createTree(scene, xPos, 0, zPos);
+    trees.push(new Tree(scene, xPos, 0, zPos));
 }
 
 
-//create player cube
+//create player cube const 
 const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00ff, velocity: {x: 0, y: -0.01, z:0}, pos: {x: 0, y: 3, z: 0}});
-player.castShadow = true;
-scene.add(player);
+// player.castShadow = true;
+// scene.add(player);
 
 
 //create player zombie
 const zombie = new CharacterController({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: 0, y: -3, z: 0}, speed: 0.01, manager: loadingManager});
 zombie.loadModel(scene);
+
+
+
 
 
 ///////////////INPUT STUFF///////////////////
