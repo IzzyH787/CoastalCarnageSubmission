@@ -166,7 +166,7 @@ const updateDifficulty=()=>{
     }
     //every 60s enemies spawn faster
     if ((Date.now() - startTime) /1000 % 60){
-        spawnRate * 0.85; //spawn twice as fast
+        spawnRate * 0.85; //spawn faster
         console.log("Upping diificulty");
     }
 }
