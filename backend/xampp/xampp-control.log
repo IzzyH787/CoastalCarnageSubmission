@@ -85,3 +85,158 @@
 4:58:37 PM  [main] 	Deinitializing Modules
 4:58:37 PM  [main] 	Deinitializing Control Panel
 
+7:01:24 PM  [main] 	Initializing Control Panel
+7:01:24 PM  [main] 	Windows Version:  Home  64-bit
+7:01:24 PM  [main] 	XAMPP Version: 8.2.12
+7:01:24 PM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+7:01:24 PM  [main] 	You are not running with administrator rights! This will work for
+7:01:24 PM  [main] 	most application stuff but whenever you do something with services
+7:01:24 PM  [main] 	there will be a security dialogue or things will break! So think 
+7:01:24 PM  [main] 	about running this application with administrator rights!
+7:01:24 PM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+7:01:24 PM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+7:01:24 PM  [main] 	Checking for prerequisites
+7:01:26 PM  [main] 	All prerequisites found
+7:01:26 PM  [main] 	Initializing Modules
+7:01:26 PM  [Apache] 	Problem detected: Apache Not Found!
+7:01:26 PM  [Apache] 	Disabling Apache buttons
+7:01:26 PM  [Apache] 	Run this program from your XAMPP root directory!
+7:01:26 PM  [mysql] 	Problem detected: MySQL Not Found!
+7:01:26 PM  [mysql] 	Disabling MySQL buttons
+7:01:26 PM  [mysql] 	Run this program from your XAMPP root directory!
+7:01:26 PM  [main] 	The FileZilla module is disabled
+7:01:26 PM  [main] 	The Mercury module is disabled
+7:01:26 PM  [Tomcat] 	Problem detected: Required Tool catalina_start.bat Not Found!
+7:01:26 PM  [Tomcat] 	Problem detected: Required Tool catalina_stop.bat Not Found!
+7:01:26 PM  [Tomcat] 	Problem detected: Required Tool catalina_service.bat Not Found!
+7:01:26 PM  [main] 	Starting Check-Timer
+7:01:26 PM  [main] 	Control Panel Ready
+12:17:48 AM  [main] 	Deinitializing Modules
+12:17:48 AM  [main] 	Deinitializing Control Panel
+
+9:35:33 AM  [main] 	Initializing Control Panel
+9:35:33 AM  [main] 	Windows Version:  Home  64-bit
+9:35:33 AM  [main] 	XAMPP Version: 8.2.12
+9:35:33 AM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+9:35:33 AM  [main] 	You are not running with administrator rights! This will work for
+9:35:33 AM  [main] 	most application stuff but whenever you do something with services
+9:35:33 AM  [main] 	there will be a security dialogue or things will break! So think 
+9:35:33 AM  [main] 	about running this application with administrator rights!
+9:35:33 AM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+9:35:33 AM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+9:35:33 AM  [main] 	Checking for prerequisites
+9:35:33 AM  [main] 	All prerequisites found
+9:35:33 AM  [main] 	Initializing Modules
+9:35:33 AM  [Apache] 	Problem detected: Apache Not Found!
+9:35:33 AM  [Apache] 	Disabling Apache buttons
+9:35:33 AM  [Apache] 	Run this program from your XAMPP root directory!
+9:35:33 AM  [mysql] 	Problem detected: MySQL Not Found!
+9:35:33 AM  [mysql] 	Disabling MySQL buttons
+9:35:33 AM  [mysql] 	Run this program from your XAMPP root directory!
+9:35:33 AM  [main] 	The FileZilla module is disabled
+9:35:33 AM  [main] 	The Mercury module is disabled
+9:35:33 AM  [Tomcat] 	Problem detected: Required Tool catalina_start.bat Not Found!
+9:35:33 AM  [Tomcat] 	Problem detected: Required Tool catalina_stop.bat Not Found!
+9:35:33 AM  [Tomcat] 	Problem detected: Required Tool catalina_service.bat Not Found!
+9:35:33 AM  [main] 	Starting Check-Timer
+9:35:33 AM  [main] 	Control Panel Ready
+9:40:10 AM  [main] 	Deinitializing Modules
+9:40:10 AM  [main] 	Deinitializing Control Panel
+
+9:40:56 AM  [main] 	Initializing Control Panel
+9:40:56 AM  [main] 	Windows Version:  Home  64-bit
+9:40:56 AM  [main] 	XAMPP Version: 8.2.12
+9:40:56 AM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+9:40:56 AM  [main] 	You are not running with administrator rights! This will work for
+9:40:56 AM  [main] 	most application stuff but whenever you do something with services
+9:40:56 AM  [main] 	there will be a security dialogue or things will break! So think 
+9:40:56 AM  [main] 	about running this application with administrator rights!
+9:40:56 AM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+9:40:56 AM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+9:40:56 AM  [main] 	Checking for prerequisites
+9:40:56 AM  [main] 	All prerequisites found
+9:40:56 AM  [main] 	Initializing Modules
+9:40:56 AM  [Apache] 	Problem detected: Apache Not Found!
+9:40:56 AM  [Apache] 	Disabling Apache buttons
+9:40:56 AM  [Apache] 	Run this program from your XAMPP root directory!
+9:40:56 AM  [mysql] 	Problem detected: MySQL Not Found!
+9:40:56 AM  [mysql] 	Disabling MySQL buttons
+9:40:56 AM  [mysql] 	Run this program from your XAMPP root directory!
+9:40:56 AM  [main] 	The FileZilla module is disabled
+9:40:56 AM  [main] 	The Mercury module is disabled
+9:40:56 AM  [Tomcat] 	Problem detected: Required Tool catalina_start.bat Not Found!
+9:40:56 AM  [Tomcat] 	Problem detected: Required Tool catalina_stop.bat Not Found!
+9:40:56 AM  [Tomcat] 	Problem detected: Required Tool catalina_service.bat Not Found!
+9:40:56 AM  [main] 	Starting Check-Timer
+9:40:56 AM  [main] 	Control Panel Ready
+9:41:24 AM  [main] 	Deinitializing Modules
+9:41:24 AM  [main] 	Deinitializing Control Panel
+
+9:40:21 AM  [main] 	Initializing Control Panel
+9:40:21 AM  [main] 	Windows Version:  Home  64-bit
+9:40:21 AM  [main] 	XAMPP Version: 8.2.12
+9:40:21 AM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+9:40:21 AM  [main] 	You are not running with administrator rights! This will work for
+9:40:21 AM  [main] 	most application stuff but whenever you do something with services
+9:40:21 AM  [main] 	there will be a security dialogue or things will break! So think 
+9:40:21 AM  [main] 	about running this application with administrator rights!
+9:40:21 AM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+9:40:21 AM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+9:40:21 AM  [main] 	Checking for prerequisites
+9:40:21 AM  [main] 	All prerequisites found
+9:40:21 AM  [main] 	Initializing Modules
+9:40:21 AM  [Apache] 	Problem detected: Apache Not Found!
+9:40:21 AM  [Apache] 	Disabling Apache buttons
+9:40:21 AM  [Apache] 	Run this program from your XAMPP root directory!
+9:40:21 AM  [mysql] 	Problem detected: MySQL Not Found!
+9:40:21 AM  [mysql] 	Disabling MySQL buttons
+9:40:21 AM  [mysql] 	Run this program from your XAMPP root directory!
+9:40:21 AM  [main] 	The FileZilla module is disabled
+9:40:21 AM  [main] 	The Mercury module is disabled
+9:40:21 AM  [Tomcat] 	Problem detected: Required Tool catalina_start.bat Not Found!
+9:40:21 AM  [Tomcat] 	Problem detected: Required Tool catalina_stop.bat Not Found!
+9:40:21 AM  [Tomcat] 	Problem detected: Required Tool catalina_service.bat Not Found!
+9:40:21 AM  [main] 	Starting Check-Timer
+9:40:21 AM  [main] 	Control Panel Ready
+5:09:41 PM  [main] 	Deinitializing Modules
+5:09:41 PM  [main] 	Deinitializing Control Panel
+
+9:41:26 AM  [main] 	Initializing Control Panel
+9:41:26 AM  [main] 	Windows Version:  Home  64-bit
+9:41:26 AM  [main] 	XAMPP Version: 8.2.12
+9:41:26 AM  [main] 	Control Panel Version: 3.3.0  [ Compiled: Apr 6th 2021 ]
+9:41:26 AM  [main] 	You are not running with administrator rights! This will work for
+9:41:26 AM  [main] 	most application stuff but whenever you do something with services
+9:41:26 AM  [main] 	there will be a security dialogue or things will break! So think 
+9:41:26 AM  [main] 	about running this application with administrator rights!
+9:41:26 AM  [main] 	XAMPP Installation Directory: "d:\uni work\webgamedevelopment\newproject\coastalcarnage\backend\xampp\"
+9:41:26 AM  [main] 	WARNING: Your install directory contains spaces.  This may break programs/scripts
+9:41:26 AM  [main] 	Checking for prerequisites
+9:41:26 AM  [main] 	All prerequisites found
+9:41:26 AM  [main] 	Initializing Modules
+9:41:26 AM  [Apache] 	Problem detected: Apache Not Found!
+9:41:26 AM  [Apache] 	Disabling Apache buttons
+9:41:26 AM  [Apache] 	Run this program from your XAMPP root directory!
+9:41:26 AM  [mysql] 	Problem detected: MySQL Not Found!
+9:41:26 AM  [mysql] 	Disabling MySQL buttons
+9:41:26 AM  [mysql] 	Run this program from your XAMPP root directory!
+9:41:26 AM  [main] 	The FileZilla module is disabled
+9:41:26 AM  [main] 	The Mercury module is disabled
+9:41:26 AM  [Tomcat] 	Problem detected: Required Tool catalina_start.bat Not Found!
+9:41:26 AM  [Tomcat] 	Problem detected: Required Tool catalina_stop.bat Not Found!
+9:41:26 AM  [Tomcat] 	Problem detected: Required Tool catalina_service.bat Not Found!
+9:41:26 AM  [main] 	Enabling autostart for module "Apache"
+9:41:26 AM  [main] 	Enabling autostart for module "MySQL"
+9:41:26 AM  [main] 	Starting Check-Timer
+9:41:26 AM  [main] 	Control Panel Ready
+9:41:26 AM  [Apache] 	Autostart active: starting...
+9:41:26 AM  [Apache] 	Attempting to start Apache app...
+9:41:26 AM  [mysql] 	Autostart active: starting...
+9:41:26 AM  [mysql] 	Attempting to start MySQL app...
+9:41:37 AM  [Tomcat] 	Attempting to start Tomcat app...
+9:41:37 AM  [Tomcat] 	Tomcat Started/Stopped with errors, return code: 1
+9:41:37 AM  [Tomcat] 	Make sure you have Java JDK or JRE installed and the required ports are free
+9:41:37 AM  [Tomcat] 	Check the "/xampp/tomcat/logs" folder for more information
+5:09:41 PM  [main] 	Deinitializing Modules
+5:09:41 PM  [main] 	Deinitializing Control Panel
+

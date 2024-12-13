@@ -10,7 +10,7 @@ import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.modul
 
 import { createTree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
 import { Box, boxCollision } from './box.js';
-import { createEnemy } from './enemy.js';
+import { Enemy, spawnEnemy } from './enemy.js';
 import { CharacterController } from './characterController.js';
 
 
@@ -67,8 +67,10 @@ stats = new Stats();
 document.body.appendChild(stats.dom);
 
 //////////////DECLARING VARIABLES///////////////
+let isPaused = false;
 let frames = 0; //stores amount of frames that have passed
-let spawnRate = 100; //how many frames until another enemy will spawn
+let spawnRate = 1000; //how many frames until another enemy will spawn
+let enemyHealth = 10;
 let speed = 0.05;
 const enemies = []; //create array to store enemies
 
@@ -152,65 +154,111 @@ const updateCamera=()=>{
     camera.position.set(0 + zombie.position.x, camera.position.y, 20 + zombie.position.z); //offset camera so doesn't spawn in model
 }
 
+const updateDifficulty=()=>{
+    //skip check if game just started
+    if((Date.now() - startTime) /1000 == 0){
+        return;
+    }
+    //every 30s enemies gain health
+    if ((Date.now() - startTime) /1000 % 30){
+        enemyHealth += 5;
+        console.log("Upping diificulty");
+    }
+    //every 60s enemies spawn faster
+    if ((Date.now() - startTime) /1000 % 60){
+        spawnRate * 0.85; //spawn twice as fast
+        console.log("Upping diificulty");
+    }
+}
+
 
 //function to animate geometry
 
 
 function animate() {
+    if(!isPaused){
+        //update animation mixer
+        var delta = clock.getDelta();
 
-    //update animation mixer
-    var delta = clock.getDelta();
+        //update zombie animation mixer
+        zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
 
-    //update zombie animation mixer
-    zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
+        //updateCamera();
+        
+        //see if difficulty needs scaling
+        updateDifficulty();
+        //update stats (fps) display
+        stats.update();
 
-    //updateCamera();
-    
-    //update stats (fps) display
-    stats.update();
+        //animating water plane
+        animateWaterPlane(waterGeometry, waterVertexCount);
 
-    //animating water plane
-    animateWaterPlane(waterGeometry, waterVertexCount);
-
-    //const animationId = requestAnimationFrame(animate);
-
-
-    /////////////WILL BE REDONE//////////////////
-    movePlayer(); //check if player (cube) moves this frame
-    //check position of player for collisions
-    player.update(ground);
+        //const animationId = requestAnimationFrame(animate);
 
 
-    //update enemy
-    enemies.forEach((enemy) => {
-    enemy.update(ground);
-
-    //check for collision between player (cube) and enemy
-    if (boxCollision({box1: zombie, box2: enemy})){
-        console.log("boom");
-        playerHealth--;
-        if (playerHealth < 0){playerHealth = 0;}
-        let healthText = "Health: ";
-        document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
-        //cancelAnimationFrame(animationId);
-    }
-    })
-
-    //if enough frames passed since last spawn
-    if (frames % spawnRate == 0){
-        createEnemy(scene, enemies); //spawn another enemy
-    }
+        /////////////WILL BE REDONE//////////////////
+        movePlayer(); //check if player (cube) moves this frame
+        //check position of player for collisions
+        player.update(ground);
 
 
-    renderer.render(scene, camera); //render scene
-    frames++; //increment frame number
+        //update enemy
+        enemies.forEach((enemy) => {
+        enemy.Update(ground, delta, wallLeft, wallRight, wallBack, zombie);
 
-    let timerText = "Timer: "; //reset time UI text
+        //check for collision between player and enemy
+        if (boxCollision({box1: zombie, box2: enemy})){
+            console.log("boom");
+            playerHealth--; //decrement player health
+            
+            let healthText = "Health: "; //reset health UI text
+            document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
+            //cancelAnimationFrame(animationId);
+        }
+        })
 
-    //if player is not dead
-    if (!playerIsDead){
-        //update timer
-        document.getElementById("timer-display").innerHTML = timerText.concat((Date.now() - startTime) /1000);
+        //if enough frames passed since last spawn
+        if (frames % spawnRate == 0){
+            enemies.push(spawnEnemy(scene));
+        }
+
+
+        renderer.render(scene, camera); //render scene
+        frames++; //increment frame number
+
+        let timerText = "Timer: "; //reset time UI text
+
+        //check if player has died this frame
+        if (playerHealth <= 0 && !playerIsDead){
+            playerHealth = 0; //make sure health cant go below 0
+        
+            let survivalTime = (Date.now() - startTime) /1000;
+            playerIsDead = true;
+            //stop timer
+            timerText = "You survived: "; //reset time UI text
+            document.getElementById("timer-display").innerHTML = timerText.concat(survivalTime).concat("s");
+
+            console.log("Player died");
+            
+        } 
+        //if player is not dead
+        if (!playerIsDead){
+            //update timer
+            document.getElementById("timer-display").innerHTML = timerText.concat((Date.now() - startTime) /1000);
+        }
+        //if player is dead
+        else{
+            playerHealth = 0; //make sure health cant go below 0
+            //make health display
+            let healthText = "Health: "; //reset health UI text
+            document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
+            //THREE.AnimationAction.timeScale = 0;
+            document.getElementById("death-text").display = "You died";
+            var deathScreen = document.getElementById("death-screen");
+            deathScreen.style.display = "block";
+            
+            isPaused = true;
+        }
     }
     
 }
