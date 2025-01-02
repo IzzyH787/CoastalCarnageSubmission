@@ -16,19 +16,45 @@
     </nav>
     <div class = "main-section" id = "input-section">
         <h2>Register</h2>
-        <form action="/action_page.php">
+        <!--removed from form tag action="/register" method="POST"-->
+        <form id="register-form" action="/register" method="POST">
             <label for="username">Username:</label>
             <br>
-            <input type="text" id="username" name="username" value="John">
+            <input type="text" id="username" name="username" value="">
             <br>
             <label for="password">Password:</label>
             <br>
-            <input type="text" id="password" name="password" value="password123">
+            <input type="password" id="password" name="password" value="">
             <br><br>
             <input type="submit" value="Submit">
         </form>
 
     </div>
+    <div id = "message-prompt" style="display: none;">
+        <h2 id="message-text">Account with that username already exists...</h2>
+    </div>
+
+    <!--<script>
+        //when form is submitted, calll contained code
+        document.getElementById("register-form").addEventListener("submit", async (e) => {
+            e.preventDefault(); //prevents form from refreshing page
+
+            const username = document.getElementById("username").value; //get inputted username
+            const password = document.getElementById("password").value; //get inputted password 
+
+            //send data to server side
+            const response = await fetch("/register", {
+                method: "POST",
+                headers:{"Content-Type": "application/json,"},
+                body: JSON.stringify({username, password}),
+            });
+
+            const result = await response.json();
+
+            //display alert depending on server response
+            alert(result.message);
+        });
+    </script>-->
     
     
 
