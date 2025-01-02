@@ -128,6 +128,7 @@ app.post("/register", async (req, res) =>{
     if (req.body.username.trim().length == 0 || req.body.password.trim().length == 0 ){
       console.log("Missing credentials, try again");
     }
+    ///////////////////ADD VALIDATION WHEN CREATING PASSWORDS///////////
     else{
       //check if username already exists in user table
       con.query("SELECT username FROM user WHERE username = ?",
@@ -140,6 +141,7 @@ app.post("/register", async (req, res) =>{
         if (result.length > 0){
           console.log("found user");
           alertJson = {error:true, data:"User already exists"}
+          /////////////////NOTIFY USER THAT USERNAME IS TAKEN////////////////
         
           //res.send(alertJson); //echo result back
           //if user with that name already exists, deny registration, prompt login
@@ -150,7 +152,7 @@ app.post("/register", async (req, res) =>{
           //console.log(hashedPassword);
           //add details to database
           con.query("INSERT INTO user (username, password) VALUES (?, ?)",
-          //unencrypted for now
+          //////////////////ENCRYPT LATER///////////////////
           [req.body.username.toString(), req.body.password],
           (err, result, fields)=>{
             //debugging
@@ -178,6 +180,67 @@ app.post("/register", async (req, res) =>{
   }
 })
 
+//configuring register post functionality
+app.post("/login", async (req, res) =>{
+  try {
+    //trim() removes all whitespace from value, checks that actual values have been inputted
+    
+    if (req.body.username.trim().length == 0 || req.body.password.trim().length == 0 ){
+      console.log("Missing credentials, try again");
+    }
+    //if a valid usernmae and passowrd value has been enterred
+    else{
+      //check if username already exists in user table
+      con.query("SELECT username FROM user WHERE username = ?",
+        [req.body.username],
+        async (err, result, fields)=> { //using async means you can use await later
+        if (err) throw err;
+        console.log(result); //result returns array of any matching fields
+
+        //check if result array has any entries
+        if (result.length > 0){
+          console.log("Account exists");
+          //select password from database that corresponds with inputted username
+          con.query("SELECT password FROM user WHERE username = ?", 
+            [req.body.username],
+            (err, result, fields)=> {
+              //console.log(result[0].password); //get password from table
+              //check if inputted password matches database password
+              
+              if (result[0].password == req.body.password){
+                console.log("Welcome to the game " + req.body.username);
+
+                //load game
+                res.redirect("/game"); //redirect to game page if successful login
+
+                /////////////SEND DATA TO BE LOADED BY GAME//////////////
+
+              }
+              //wrong password inputted
+              else{
+                console.log("Wrong password, try again...");
+              }
+              
+
+
+              
+            });
+        
+          
+        }
+        //username doesnt exist so add details to database
+        else{ 
+          console.log("User does not exist");
+          ///////////PROMPT TO REGISTER, TELL USER DOESN'T EXIST//////////////
+        }
+      });
+    }
+  }
+  catch (error) {
+    console.log(error);; //output error found
+    res.redirect("/login"); //redirect to login page if any error
+  }
+});
 
 
 
