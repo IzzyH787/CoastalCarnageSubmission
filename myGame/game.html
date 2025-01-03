@@ -10,6 +10,7 @@
         <h1>Coastal Carnage</h1>
         <p id = "health-display">Health:</p>
         <p id = "timer-display">Timer:</p>
+        <p id = "details-display">*Details appear hear*</p>
 
         <button class = "btn" id = "up-button">UP</button>
         <button class = "btn" id = "down-button">DOWN</button>
@@ -35,7 +36,7 @@
     <!--div containing three.js scene canvas-->
     <div id = "scene-container">
         <!-- background audio for game-->  
-        <audio loop autoplay>
+        <audio loop autoplay muted>
             <source src = "resources/audio/background-music.mp3" type = "audio/mpeg">
         </audio>  
     </div>
@@ -55,6 +56,8 @@
     </script>
     <!--referencing/calling main.js script-->
     <script type="module" src="js/main.js"></script>
+
+    <script type="module" src="js/gameData.js" ></script>
 
 
     
