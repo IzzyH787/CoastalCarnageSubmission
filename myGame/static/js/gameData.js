@@ -1,3 +1,7 @@
+let username;
+let highscore;
+let gamesPlayed;
+
 //called on game loading
 (async () =>{
     try {
@@ -16,9 +20,10 @@
                        
         console.log("Received data", data); //output data received from server
         //display data on page
-        
+        username = data.username;
+        highscore = data.highscore;
+        gamesPlayed = data.gamesPlayed;
         document.getElementById("details-display").innerHTML = `Username: ${data.username}, Highscore ${data.highscore}, Games played: ${data.gamesPlayed}`;
-    
     } 
     catch (error) {
         console.error("Error fetching data:", error);
@@ -26,3 +31,32 @@
 
     }
 })(); //() calls async function
+
+
+export const saveData=(timeSurvived)=>{
+    if (timeSurvived > highscore){
+        highscore = timeSurvived;
+    }
+    gamesPlayed++;
+
+    (async () =>{
+        try {
+            console.log("sending data");
+            const response = await fetch('/send-details', {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    'username': username,
+                    'highscore': highscore,
+                    'gamesPlayed': gamesPlayed,
+                }),
+             });
+            
+        } 
+        catch (error) {
+            console.error("Error sending data:", error);
+    
+        }
+    })(); //() calls async function
+
+}

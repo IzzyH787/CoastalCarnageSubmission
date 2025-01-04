@@ -13,6 +13,8 @@ import { Box, boxCollision } from './box.js';
 import { Enemy, spawnEnemy } from './enemy.js';
 import { CharacterController } from './characterController.js';
 
+import { saveData } from './gameData.js';
+
 
 ///////////CREATING LOADING SCREEN///////////
 
@@ -227,6 +229,9 @@ const animate=()=> {
             document.getElementById("timer-display").innerHTML = timerText.concat(survivalTime).concat("s");
 
             console.log("Player died");
+
+            //save data to data base- check highscore and increment games played
+            saveData(survivalTime);
             
         } 
         //if player is not dead

@@ -93,6 +93,21 @@ app.post("/get-details", jsonParser, (req, res)=>{
 
 })
 
+app.post("/send-details", jsonParser, (req, res)=>{
+  try {
+    console.log("updating database");
+    con.query("UPDATE user SET highscore = ?, games_played = ? WHERE username = ?",
+      [req.body.highscore, req.body.gamesPlayed, req.body.username],
+      async (err, result, fields)=> { //using async means you can use await later
+      if (err) throw err;
+      console.log(result); //result returns array of any matching fields
+  });
+  } 
+  catch (error) {
+    
+  }
+});
+
 //configuring register post functionality
 app.post("/register", async (req, res) =>{
   try {
