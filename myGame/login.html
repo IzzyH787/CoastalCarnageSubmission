@@ -32,42 +32,7 @@
 
     </div>
     
-    <!--referencing/calling main.js script
-    <script type="module" src="js/login.js"></script>-->
-    <!-- <script>
-        
-        //make request to server for json data
-        document.getElementById("input-section").addEventListener("submit", async (e) => {
-            
-            e.preventDefault(); //prevents form from refreshing page
-            try {
-                const response = await fetch('/login', {
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password}),
-                
-            });
-                
-                //checks no error when making fetch request, response.ok is true for staus value of 200-299
-                if (!response.ok){
-                    throw new Error("Server didn't respond correctly");
-                } 
-                const data = await response.json(); //makes sure method is called properly
-                               
-                console.log("Received data", data); //output data received from server
-                //display data on page
-                
-                document.getElementById("test-output").innerHTML = `Username: ${data.dataJson.username}, Highscore ${data.dataJson.highscore}, Games played: ${data.dataJson.gamesPlayed}`;
-            
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById("test-output").innerHTML = "Error retrieving data.";
-  
-            }
-            
-        });
-
-    </script> -->
+    
     
 
 </body>

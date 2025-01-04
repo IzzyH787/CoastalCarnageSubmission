@@ -13,7 +13,9 @@ import { Box, boxCollision } from './box.js';
 import { Enemy, spawnEnemy } from './enemy.js';
 import { CharacterController } from './characterController.js';
 
-import { saveData } from './gameData.js';
+import { playDeathSound } from './audioManager.js';
+
+import { saveData, readData } from './gameData.js';
 
 
 ///////////CREATING LOADING SCREEN///////////
@@ -34,6 +36,8 @@ loadingManager.onLoad=()=>{
     progressBarContainer.style.display = 'none';
 }
 
+//load data to display from database
+readData();
 ////////////SETTING UP SCENE/////////////
 
 const scene = new THREE.Scene(); //create scene
@@ -114,24 +118,21 @@ const animateWaterPlane = (geometry, count) => {
     waterTexture.offset.y += 0.0005; //offset texture to give appearance of moving water
 }
 
-
-const movePlayer=()=>{
-
-
-
-    //check if player falls in water
-    if (player.position.y < ground.position.y && !playerDrowned){
-        //create water partucle effect
-        waterParticles = createPointGeometry(scene, player.position.x, player.position.y, player.position.z, 2);
+const checkIfDrowned=()=>{
+    //check if underwater
+    if (zombie.position.y < ground.position.y - 3 && !playerDrowned){
+        //create water particle effect
+        waterParticles = createPointGeometry(scene, zombie.position.x, zombie.position.y, zombie.position.z, 2);
         console.log('drowned');
         playerDrowned = true; //set player has now drowned
-        playerIsDead = true; //player is now dead
+        //playerIsDead = true; //player is now dead
         playerHealth = 0; //zero player health
         //update health on UI
         healthText = "Health: "
         document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
     }
 }
+
 
 const updateCamera=()=>{
     //initial position 0, 3, 20
@@ -163,7 +164,7 @@ const animate=()=> {
     if(!isPaused){
         //update animation mixer
         var delta = clock.getDelta();
-
+        
         //update zombie animation mixer
         zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
         trees.forEach(tree => {
@@ -185,10 +186,9 @@ const animate=()=> {
 
 
         /////////////WILL BE REDONE//////////////////
-        movePlayer(); //check if player (cube) moves this frame
-        //check position of player for collisions
+        
 
-        //player.update(ground);
+
 
         //update enemy
         enemies.forEach((enemy) => {
@@ -216,6 +216,8 @@ const animate=()=> {
         renderer.render(scene, camera); //render scene
         frames++; //increment frame number
 
+        checkIfDrowned();
+
         let timerText = "Timer: "; //reset time UI text
 
         //check if player has died this frame
@@ -227,11 +229,14 @@ const animate=()=> {
             //stop timer
             timerText = "You survived: "; //reset time UI text
             document.getElementById("timer-display").innerHTML = timerText.concat(survivalTime).concat("s");
+            //play death sound
+            playDeathSound();
 
             console.log("Player died");
 
             //save data to data base- check highscore and increment games played
             saveData(survivalTime);
+            readData(); //update UI
             
         } 
         //if player is not dead
@@ -246,10 +251,14 @@ const animate=()=> {
             let healthText = "Health: "; //reset health UI text
             document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
             //THREE.AnimationAction.timeScale = 0;
+            
+            //display death screen
             document.getElementById("death-text").display = "You died";
             var deathScreen = document.getElementById("death-screen");
             deathScreen.style.display = "block";
             
+            
+
             isPaused = true;
         }
     }
@@ -315,10 +324,6 @@ for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
 }
 
 
-//create player cube const 
-const player = new Box({width: 1, height: 2, depth: 1, color: 0xff00ff, velocity: {x: 0, y: -0.01, z:0}, pos: {x: 0, y: 3, z: 0}});
-// player.castShadow = true;
-// scene.add(player);
 
 
 //create player zombie
@@ -364,11 +369,11 @@ window.addEventListener('keydown', (event) => {
             keys.d.pressed = true;
             break;
         case 'Space':
-            console.log (player.velocity.y);
-            if (player.velocity.y < 0.01 && player.velocity.y > -0.01){
-                console.log("jump");
-                player.velocity.y = 0.1;
-            }
+            // console.log (player.velocity.y);
+            // if (player.velocity.y < 0.01 && player.velocity.y > -0.01){
+            //     console.log("jump");
+            //     player.velocity.y = 0.1;
+            // }
             
             break;     
     }
@@ -426,21 +431,31 @@ document.getElementById("up-button").addEventListener("mousedown", moveUp);
 document.getElementById("down-button").addEventListener("mousedown", moveDown);
 document.getElementById("left-button").addEventListener("mousedown", moveLeft);
 document.getElementById("right-button").addEventListener("mousedown", moveRight);
+document.getElementById("replay-btn").addEventListener("mousedown", ()=>{
+    saveData(0);
+});
 
 document.getElementById("up-button").addEventListener("mouseup", stopMoveUp);
 document.getElementById("down-button").addEventListener("mouseup", stopMoveDown);
 document.getElementById("left-button").addEventListener("mouseup", stopMoveLeft);
 document.getElementById("right-button").addEventListener("mouseup", stopMoveRight);
 
+
 document.getElementById("up-button").addEventListener("touchstart", moveUp);
 document.getElementById("down-button").addEventListener("touchstart", moveDown);
 document.getElementById("left-button").addEventListener("touchstart", moveLeft);
 document.getElementById("right-button").addEventListener("touchstart", moveRight);
+document.getElementById("replay-btn").addEventListener("touchstart", ()=>{
+    saveData(0);
+    readData();
+});
 
 document.getElementById("up-button").addEventListener("touchend", stopMoveUp);
 document.getElementById("down-button").addEventListener("touchend", stopMoveDown);
 document.getElementById("left-button").addEventListener("touchend", stopMoveLeft);
 document.getElementById("right-button").addEventListener("touchend", stopMoveRight);
+
+
 
 
 

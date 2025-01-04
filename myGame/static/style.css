@@ -69,10 +69,29 @@ nav {
     border-radius: 5px;
     padding: 5px;
 }
+#description-section{
+  margin: 5%;;
+  align-items: center;
+  display: inline-block;
+  
+}
 
 #description{
-  height: 50%;
+  
+  width: 80%;
+  align-self: center;
   font-weight: bold;
+  display: flex;
+  justify-content: right;
+  margin: auto;
+}
+
+#index-image{
+  display: flex;
+  width:40%;
+  justify-content: left;
+  border-radius: 10px;
+  margin: auto;
 }
 
 #input-section{

@@ -80,13 +80,42 @@ app.post('/auth', jsonParser, (req, res)=>{
 
 app.post("/get-details", jsonParser, (req, res)=>{
   try{
-    console.log(dataJson);
-    if(!dataJson){
-      console.log("Json not defined yet");
-      return res.status(500).json({ error: "No data to get !" }); // handles errors
-    }
-    return res.json(dataJson); //if there is data stored in adtaJson return it
-  }catch{
+
+    (async () => {
+      try {
+        const query = util.promisify(con.query).bind(con); //make con.query a promie-based funciton, allows use of await to wait until query complete
+        //run async function to run asychronous code immediately
+        const result = await query("SELECT * FROM user WHERE username = ?", [confirmedUsername]); //await makes rest of code wait until query finishes
+
+        //confirmedID = result[0].id;
+        confirmedUsername = result[0].username;
+        confirmedHighscore = result[0].highscore; 
+        confirmedGamesPlayed = result[0].games_played; 
+
+        console.log("Read from data base your ID is ", confirmedID, "your highscore is ", confirmedHighscore, "and you have played", confirmedGamesPlayed);
+
+        //make json object of player's username, highscore and games played from database
+        dataJson = { 
+          username: confirmedUsername, 
+          highscore: confirmedHighscore, 
+          gamesPlayed: confirmedGamesPlayed,
+        }; 
+
+        console.log(dataJson); 
+        if(!dataJson){
+          console.log("Json not defined yet");
+          return res.status(500).json({ error: "No data to get !" }); // handles errors
+        }
+        return res.json(dataJson); //if there is data stored in adtaJson return it
+        
+      } 
+      catch (error) {
+        console.log(error);
+      }
+    })(); //() calls async method
+    
+  }
+  catch{
     console.log(error);
     return res.status(500).json({ error: "Something went wrong!" }); // handles errors
   }
@@ -104,7 +133,7 @@ app.post("/send-details", jsonParser, (req, res)=>{
   });
   } 
   catch (error) {
-    
+    console.log(error);
   }
 });
 
