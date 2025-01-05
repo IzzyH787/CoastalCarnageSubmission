@@ -14,6 +14,7 @@ import { Enemy, spawnEnemy } from './enemy.js';
 import { CharacterController } from './characterController.js';
 
 import { playDeathSound } from './audioManager.js';
+import { camera, updateCamera } from './cameraManager.js';
 
 import { saveData, readData } from './gameData.js';
 
@@ -41,7 +42,7 @@ readData();
 ////////////SETTING UP SCENE/////////////
 
 const scene = new THREE.Scene(); //create scene
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //create scene camera
+//const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //create scene camera
 const loader = new THREE.TextureLoader(loadingManager);
 
 //setting up renderer
@@ -58,15 +59,7 @@ canvas.appendChild(renderer.domElement);
 //setting up camera
 camera.position.set(0, 15, 20);
 camera.rotation.set(-Math.PI /4, 0, 0);
-//create orbit controls
 
-let controls;
-const createOrbitControls=()=>{
-    controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 0, 0);
-    controls.update();
-}
-createOrbitControls();
 
 //tracking stats for game
 let stats;
@@ -134,10 +127,10 @@ const checkIfDrowned=()=>{
 }
 
 
-const updateCamera=()=>{
-    //initial position 0, 3, 20
-    camera.position.set(0 + zombie.position.x, camera.position.y, 20 + zombie.position.z); //offset camera so doesn't spawn in model
-}
+// const updateCamera=()=>{
+//     //initial position 0, 3, 20
+//     camera.position.set(0 + zombie.position.x, camera.position.y, 20 + zombie.position.z); //offset camera so doesn't spawn in model
+// }
 
 const updateDifficulty=()=>{
     //skip check if game just started
@@ -172,7 +165,8 @@ const animate=()=> {
             console.log(tree.position);
             zombie.checkForTree(tree);
         });
-        //updateCamera();
+        //control camera 
+        updateCamera(zombie);
         
         //see if difficulty needs scaling
         updateDifficulty();

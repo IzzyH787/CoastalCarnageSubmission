@@ -1,36 +1,43 @@
-//client sude
-const postUser=()=>{
-    console.log("post user");
-    //encode data
-    let username = document.getElementById("username").value;
-    let formData = {name: username};
-  
-    let postData = JSON.stringify(formData);
-    console.log(formData);
-    //send data using xhr
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "auth", true);
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.send(postData);
-    //decode response
-    xhr.onload = () => {
-        let result = xhr.response;
-        console.log("Get response from express:" + result); //receive text
-        let resultObj = JSON.parse(result);
-        if (resultObj.error){
-        //update UI
-        alert("Wrong username or password, try again!");
-        }
-        else{
+(async () =>{
+    try {
+        console.log("fetching data");
+        const response = await fetch('/check-login', {
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'},
         
-        alert("Welcome!");
-        window.location.href = "/game"; //redirect to game page
+    });
         
+        //checks no error when making fetch request, response.ok is true for staus value of 200-299
+        if (!response.ok){
+            throw new Error("Server didn't respond correctly");
+        } 
+        const data = await response.json(); //makes sure method is called properly
+                       
+        console.log("Received data", data); //output data received from server
+        
+        //status 0 = missing credentials
+        //status 1 = user does not exist
+        //status 2 = wrong password
+        switch(data.status){
+            case 0:
+                document.getElementById("error-output") .innerHTML = "Missing credentials, try again!";
+                break;
+            case 1:
+                document.getElementById("error-output") .innerHTML = `Username doesn't exist, <a href="/register">register</a> here`;
+                break;
+            case 2:
+                document.getElementById("error-output") .innerHTML = "Wrong password, please try again";
+                break;
+            default:
+                document.getElementById("error-output") .innerHTML = "";
+                break;
         }
-    }
-    }
-  
-    //add button click event to UI
 
-    const form = document.querySelector("#submit-btn");
-    form.addEventListener('click', postUser);
+        
+    } 
+    catch (error) {
+        console.error("Error fetching data:", error);
+        document.getElementById("error-output").innerHTML = "Error retrieving data.";
+
+    }
+})(); //() calls async function

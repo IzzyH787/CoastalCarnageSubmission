@@ -24,7 +24,8 @@ export const readData=()=>{
             username = data.username;
             highscore = data.highscore;
             gamesPlayed = data.gamesPlayed;
-            document.getElementById("details-display").innerHTML = `Username: ${data.username}, Highscore ${data.highscore}, Games played: ${data.gamesPlayed}`;
+            document.getElementById("title") .innerHTML = `Welcome ${data.username}!`;
+            document.getElementById("details-display").innerHTML = `Highscore ${data.highscore}, Games played: ${data.gamesPlayed}`;
         } 
         catch (error) {
             console.error("Error fetching data:", error);

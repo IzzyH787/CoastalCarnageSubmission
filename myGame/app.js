@@ -23,6 +23,8 @@ let confirmedUsername;
 let confirmedHighscore;
 let confirmedGamesPlayed;
 let dataJson;
+let prevLoginStatus = 99;
+let prevRegisterStatus = 99;
 
 
 var con = mysql.createConnection({
@@ -35,11 +37,6 @@ var con = mysql.createConnection({
 con.connect((err)=> {
   if (err) throw err;
   console.log("Connected!");
-  //outputs table
-  // con.query("SELECT * FROM user", function (err, result, fields) {
-  //   if (err) throw err;
-  //   console.log(result);
-  // });
 });
 
 //serve static files, includes other files
@@ -50,33 +47,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use(express.urlencoded({extended: true}));
 app.use(flash());
 app.use(express.json());
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false, //wont resave sesson variable if nothing is changed
-//   saveUninitialized: false
-// }));
 
-
-app.post('/auth', jsonParser, (req, res)=>{
-  let name = req.body.name; //get name data from body
-  console.log("Authorising...")
-  console.log("Input username = " + name);
-  //construct json message
-  let nameJson = {error:false, data:name}; //two parameters in object to take server messages back
-
-  //if it coorcet username, return correct json messafe
-  if (name == "123"){
-    console.log("Correct user 123");
-    return res.json(nameJson); //directly return username
-  }
-  //if it is wrond username, return error
-  else{
-    //let value = req.body.name; //get received json string
-    nameJson = {error:true, data:"Wrong user name"};
-    //res.send(nameJson); //echo result back
-    return res.json(nameJson); //return error json object
-  }
-});
 
 app.post("/get-details", jsonParser, (req, res)=>{
   try{
@@ -120,7 +91,7 @@ app.post("/get-details", jsonParser, (req, res)=>{
     return res.status(500).json({ error: "Something went wrong!" }); // handles errors
   }
 
-})
+});
 
 app.post("/send-details", jsonParser, (req, res)=>{
   try {
@@ -137,13 +108,35 @@ app.post("/send-details", jsonParser, (req, res)=>{
   }
 });
 
+app.post("/check-login", jsonParser, (req, res)=>{
+  try {
+    console.log("checking previous login attempt");
+    return res.json({status: prevLoginStatus});
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/check-register", jsonParser, (req, res)=>{
+  try {
+    console.log("checking previous login attempt");
+    return res.json({status: prevRegisterStatus});
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
 //configuring register post functionality
 app.post("/register", async (req, res) =>{
   try {
     //trim() removes all whitespace from value, checks that actual values have been inputted
     
     if (req.body.username.trim().length == 0 || req.body.password.trim().length == 0 ){
+      prevRegisterStatus = 0;
       console.log("Missing credentials, try again");
+      res.redirect("/register"); //reload register page
     }
     ///////////////////ADD VALIDATION WHEN CREATING PASSWORDS///////////
     else{
@@ -157,12 +150,9 @@ app.post("/register", async (req, res) =>{
         //check if result array has any entries
         if (result.length > 0){
           console.log("found user");
+          prevRegisterStatus = 1; //siplay error mess
           res.redirect("/register"); //reload register page
-          //alertJson = {error:true, data:"User already exists"}
-          /////////////////NOTIFY USER THAT USERNAME IS TAKEN////////////////
-        
-          //res.send(alertJson); //echo result back
-          //if user with that name already exists, deny registration, prompt login
+          
         }
         //username doesnt exist so add details to database
         else{          
@@ -183,9 +173,7 @@ app.post("/register", async (req, res) =>{
             if (err) throw err;
             console.log(result);
           });
-          //send alert message to client side
-          alertJson = {error:false, data:"New account created successfully"};
-          //res.send(alertJson);
+          
           //redirect to login page
           res.redirect("/login"); //redirect user to login page
         }
@@ -205,6 +193,9 @@ app.post("/login", async (req, res) =>{
     console.log(req.body.username, req.body.password);
     if (req.body.username.trim().length == 0 || req.body.password.trim().length == 0 ){
       console.log("Missing credentials, try again");
+      prevLoginStatus = 0;
+      res.redirect("/login"); //redirect to register page if any error
+
     }
     //if a valid usernmae and passowrd value has been enterred
     else{
@@ -261,30 +252,27 @@ app.post("/login", async (req, res) =>{
                   }
                 })(); //() calls async method
                 //load game
-                res.redirect("/game"); //redirect to game page if successful login
-                
-
-
-                
+                res.redirect("/game"); //redirect to game page if successful login                      
               }
               //wrong password inputted
               else{
                 console.log("Wrong password, try again...");
-                return res.status(500).json({error: "Something went wrong"}); //handle errors
-                
-              }
-              
-
-
-              
+                //reset login page and display issue
+                prevLoginStatus = 2;
+                res.redirect("/login"); //redirect to game page if successful login
+                //return res.status(500).json({error: "Something went wrong"}); //handle errors             
+              }         
             });
         
           
         }
         //username doesnt exist so add details to database
         else{ 
+          
           console.log("User does not exist");
           ///////////PROMPT TO REGISTER, TELL USER DOESN'T EXIST//////////////
+          prevLoginStatus = 1;
+          res.redirect("/login"); //redirect to game page if successful login
         }
       });
     }
