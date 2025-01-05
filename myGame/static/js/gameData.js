@@ -18,15 +18,18 @@ export const readData=()=>{
                 throw new Error("Server didn't respond correctly");
             } 
             const data = await response.json(); //makes sure method is called properly
-                           
-            console.log("Received data", data); //output data received from server
-            //display data on page
-            username = data.username;
-            highscore = data.highscore;
-            gamesPlayed = data.gamesPlayed;
-            document.getElementById("title") .innerHTML = `Welcome ${data.username}!`;
-            document.getElementById("details-display").innerHTML = `Highscore ${data.highscore}, Games played: ${data.gamesPlayed}`;
-        } 
+            //check if there is an account logged in, if username is null
+            if (data.username){
+                console.log("Received data", data); //output data received from server
+                //display data on page
+                username = data.username;
+                highscore = data.highscore;
+                gamesPlayed = data.gamesPlayed;
+                document.getElementById("title") .innerHTML = `Welcome ${data.username}!`;
+                document.getElementById("details-display").innerHTML = `Highscore ${data.highscore}, Games played: ${data.gamesPlayed}`;
+            
+            }
+            } 
         catch (error) {
             console.error("Error fetching data:", error);
             document.getElementById("details-display").innerHTML = "Error retrieving data.";

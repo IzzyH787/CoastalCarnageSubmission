@@ -51,6 +51,17 @@ export class Tree{
         this.rightPosition = this.position.x + this.radius / 2;
         this.frontPosition = this.position.z + this.radius / 2;
         this.backPosition = this.position.z - this.radius / 2;
+        this.topPosition = this.position.y;
+        this.bottomPosition = this.position.y;
+    }
+    //check if 2 boxes overlap
+    hasBoxCollision=({box1, box2})=>{
+        const xCollision = ( (box1.rightPosition >= box2.leftPosition) && (box1.leftPosition <= box2.rightPosition) );
+        //frame ahead for y collision, gravity
+        const yCollision = ( (box1.bottomPosition + box1.velocity.y <= box2.topPosition) && (box1.topPosition >= box2.bottomPosition) );
+        const zCollision = ( (box1.frontPosition >= box2.backPosition) && (box1.backPosition <= box2.frontPosition) );
+        
+        return (xCollision && yCollision && zCollision);
     }
     Update=()=>{
 

@@ -134,11 +134,11 @@ const checkIfDrowned=()=>{
 
 const updateDifficulty=()=>{
     //skip check if game just started
-    if((Date.now() - startTime) /1000 == 0){
+    if((Date.now() - startTime) / 1000 == 0){
         return;
     }
     //every 30s enemies gain health
-    if ((Date.now() - startTime) /1000 % 30){
+    if ((Date.now() - startTime) / 1000 % 30){
         enemyHealth += 5;
         console.log("Upping diificulty");
     }
@@ -160,6 +160,7 @@ const animate=()=> {
         
         //update zombie animation mixer
         zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object
+
         trees.forEach(tree => {
             console.log("Tree position:");
             console.log(tree.position);
@@ -230,6 +231,7 @@ const animate=()=> {
 
             //save data to data base- check highscore and increment games played
             saveData(survivalTime);
+            //need fixing for guest players
             readData(); //update UI
             
         } 

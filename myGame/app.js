@@ -128,6 +128,38 @@ app.post("/check-register", jsonParser, (req, res)=>{
   }
 });
 
+app.post("/log-out", jsonParser, (req, res)=>{
+  try {
+    console.log("logged out");
+    confirmedID = null;
+    confirmedUsername = null;
+    confirmedHighscore = null;
+    confirmedGamesPlayed = null;
+    dataJson = null;
+    
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/log-out', (req, res) => {
+  try {
+    console.log("logged out");
+    confirmedID = null;
+    confirmedUsername = null;
+    confirmedHighscore = null;
+    confirmedGamesPlayed = null;
+    dataJson = null;
+    res.sendFile(__dirname + '/index.html');
+    
+  }
+  catch (error) {
+    console.log(error);
+  }
+  
+});
+
 //configuring register post functionality
 app.post("/register", async (req, res) =>{
   try {
@@ -154,28 +186,54 @@ app.post("/register", async (req, res) =>{
           res.redirect("/register"); //reload register page
           
         }
-        //username doesnt exist so add details to database
-        else{          
-          //const hashedPassword = await bcrypt.hash(req.body.password, 10); //take inputted password hashes it and makes sure it is completed hashing before continuing
-          //console.log(hashedPassword);
-          //add details to database
-          con.query("INSERT INTO user (username, password) VALUES (?, ?)",
-          //////////////////ENCRYPT LATER///////////////////
-          [req.body.username.toString(), req.body.password],
-          (err, result, fields)=>{
-            //debugging
-            if(err) throw err;
-            console.log(result);
-          });
 
-          //output table to check user has been added
-          con.query("SELECT * FROM user", function (err, result, fields) {
-            if (err) throw err;
-            console.log(result);
-          });
+        //username doesnt exist so add details to database
+        else{
+          //check username or password does not contain spaces, if lengths dont match must contain spaces
+          console.log(req.body.username.trim().length, req.body.username.length);
+          // \s matches any whitespace character, including spaces, tabs, and newlines
+          if (/\s/.test(req.body.username) || /\s/.test(req.body.password)){
+            prevRegisterStatus = 2;
+            console.log("Username or password can't contain spaces");
+            res.redirect("/register"); //reload register page
+          }
+          else{
+            //check password is secure enough, longer than 8 characters, contains symbol and number
+            containsNumber = /\d/.test(req.body.password);
+            containsCapital = /[A-Z]/.test(req.body.password);
+            containsSymbol = /[!"£$%^&*()-_+=|,<>./?;:'@#~]/.test(req.body.password);
+            console.log(containsNumber, containsCapital, containsSymbol);
+            if (containsNumber && containsCapital && containsSymbol){
+              const hashedPassword = await bcrypt.hash(req.body.password, 10); //take inputted password hashes it and makes sure it is completed hashing before continuing
+              console.log(hashedPassword);
+              //add details to database
+              con.query("INSERT INTO user (username, password) VALUES (?, ?)",
+                //////////////////add eusername and encrypted password to database///////////////////
+                [req.body.username.toString(), hashedPassword],
+                (err, result, fields)=>{
+                  //debugging
+                  if(err) throw err;
+                  console.log(result);
+                });
+      
+                //output table to check user has been added
+                con.query("SELECT * FROM user", function (err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                });
+                
+                //redirect to login page
+                res.redirect("/login"); //redirect user to login page
+            }
+            //password is too weak
+            else{
+              prevRegisterStatus = 3;
+              console.log("Password too weak");
+              res.redirect("/register"); //reload register page
+            }
+            
+          }
           
-          //redirect to login page
-          res.redirect("/login"); //redirect user to login page
         }
       });
     }    
@@ -212,11 +270,10 @@ app.post("/login", async (req, res) =>{
           //select password from database that corresponds with inputted username
           con.query("SELECT password FROM user WHERE username = ?", 
             [req.body.username],
-            (err, result, fields)=> {
-              //console.log(result[0].password); //get password from table
+            async (err, result, fields)=> {
               //check if inputted password matches database password
-              
-              if (result[0].password == req.body.password){
+              //match = await bcrypt.compare(req.body.password, result[0].password); //check against stored hash value
+              if (await bcrypt.compare(req.body.password, result[0].password)){
                 console.log("Welcome to the game " + req.body.username);
 
                 

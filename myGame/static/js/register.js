@@ -17,7 +17,8 @@
         
         //status 0 = missing credentials
         //status 1 = user already not exist
-        //status 2 = weak password
+        //status 2 = username or password contains space
+        //status 3 = weak password
         switch(data.status){
             case 0:
                 document.getElementById("error-output") .innerHTML = "Missing credentials, try again!";
@@ -26,7 +27,10 @@
                 document.getElementById("error-output") .innerHTML = `Username already exists, <a href="/login">login</a> here`;
                 break;
             case 2:
-                document.getElementById("error-output") .innerHTML = "Create a stronger password";
+                document.getElementById("error-output") .innerHTML = "Username or passwords can't conatin spaces, try again";
+                break
+            case 3:
+                document.getElementById("error-output") .innerHTML = 'Password must contain<ul><li>At least 8 characters</li><li>At least one capital letter</li><li>At least one number</li><li>At least one symbol (e.g. !?.,&_ )</li></ul>';
                 break;
             default:
                 document.getElementById("error-output") .innerHTML = "";
