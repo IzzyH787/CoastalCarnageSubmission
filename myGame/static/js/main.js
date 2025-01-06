@@ -8,10 +8,20 @@ import { Timer } from 'https://unpkg.com/three@0.169.0/examples/jsm/misc/Timer.j
 
 import Stats from 'https://unpkg.com/three@0.169.0/examples/jsm/libs/stats.module.js';
 
-import { Tree, addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
+import { renderer } from './rendererManager.js';
+import { stats } from './statsManager.js';
+
+import { isPaused, frames, setIsPaused, setFrames, clock, startTime} from './gameManager.js';
+import { addPlane, createSkybox, createPointGeometry, waterPlane, waterGeometry, waterVertexCount, waterTexture } from './assetCreator.js';
+
+import { Tree, trees } from './tree.js';
+import { Ship, ships } from './ship.js';
 import { Box, boxCollision } from './box.js';
-import { Enemy, spawnEnemy } from './enemy.js';
+import { loadingManager } from './loadingScreen.js';
+import { Enemy, spawnEnemy, spawnRate, enemyHealth, speed, enemies, setEnemyHealth, setSpawnRate } from './enemy.js';
 import { CharacterController } from './characterController.js';
+import { animatePlane } from './waterManager.js';
+import {healthText, timerText, dataText, setHealthText, setTimeText, setDataText} from './uiManager.js'
 
 import { playDeathSound } from './audioManager.js';
 import { camera, updateCamera } from './cameraManager.js';
@@ -19,80 +29,23 @@ import { camera, updateCamera } from './cameraManager.js';
 import { saveData, readData } from './gameData.js';
 
 
-///////////CREATING LOADING SCREEN///////////
 
-//create loading manager 
-const loadingManager = new THREE.LoadingManager();
-//get progress bar elemENt from index.html
-const progressBar = document.getElementById('progress-bar');
-const progressBarContainer = document.querySelector('.progress-bar-container');
-//called for each item loaded by loader
-loadingManager.onProgress=(url, loaded, total)=>{
-    console.log('Started loading: ' + url);
-    progressBar.value = (loaded / total) * 100;
-}
-
-//called after all files are loaded
-loadingManager.onLoad=()=>{
-    progressBarContainer.style.display = 'none';
-}
-
-//load data to display from database
-readData();
 ////////////SETTING UP SCENE/////////////
 
 const scene = new THREE.Scene(); //create scene
 //const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); //create scene camera
 const loader = new THREE.TextureLoader(loadingManager);
 
-//setting up renderer
-
-const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true}); //create renderer
-
-renderer.setSize( window.innerWidth, window.innerHeight ); //set size of renderer to window' size
-
-
-renderer.shadowMap.enabled = true; //allows objects to cast shadows
-//get DOM element by ID or canvas rendering
-const canvas = document.querySelector('#scene-container');
-canvas.appendChild(renderer.domElement);
-//setting up camera
-camera.position.set(0, 15, 20);
-camera.rotation.set(-Math.PI /4, 0, 0);
-
-
-//tracking stats for game
-let stats;
-stats = new Stats();
-document.body.appendChild(stats.dom);
-
 //////////////DECLARING VARIABLES///////////////
-let isPaused = false;
-let frames = 0; //stores amount of frames that have passed
-let spawnRate = 1000; //how many frames until another enemy will spawn
-let enemyHealth = 10;
-let speed = 0.05;
-const enemies = []; //create array to store enemies
 
-const trees = []; //create array to store trees
-
-let playerDrowned = false; 
-let waterParticles; //variable for particle effects
-
-let playerIsDead = false;
-let playerHealth = 10;
-const playerMaxHealth = 10;
+//create player: zombie
+const zombie = new CharacterController({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: 0, y: -3, z: 0}, speed: 0.01, manager: loadingManager});
+zombie.loadModel(scene);
+//add water to scene
+console.log(waterPlane);
+scene.add(waterPlane);
 //initial UI display of player health
-let healthText = "Health: ";
-healthText = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
-document.getElementById("health-display").innerHTML = healthText;
-
-
-//initialise timers
-const clock = new THREE.Clock();
-const timer = new Timer();
-const startTime = Date.now();
-
+setHealthText("Health: ".concat(zombie.currentHealth, "/", zombie.maxHealth, "HP"));
 
 //////////////DEFINING FUNCTIONS///////////////////
 const animateWaterPlane = (geometry, count) => {
@@ -113,24 +66,19 @@ const animateWaterPlane = (geometry, count) => {
 
 const checkIfDrowned=()=>{
     //check if underwater
-    if (zombie.position.y < ground.position.y - 3 && !playerDrowned){
+    if (zombie.position.y < ground.position.y - 3 && !zombie.isDrowned){
         //create water particle effect
-        waterParticles = createPointGeometry(scene, zombie.position.x, zombie.position.y, zombie.position.z, 2);
+        const waterParticles = createPointGeometry(scene, zombie.position.x, zombie.position.y, zombie.position.z, 2);
         console.log('drowned');
-        playerDrowned = true; //set player has now drowned
+        zombie.isDrowned = true; //set player has now drowned
         //playerIsDead = true; //player is now dead
-        playerHealth = 0; //zero player health
+        zombie.currentHealth = 0; //zero player health
         //update health on UI
-        healthText = "Health: "
-        document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP");
+        setHealthText("Health: ".concat(zombie.currentHealth, "/", zombie.maxHealth, "HP"));
+        
     }
 }
 
-
-// const updateCamera=()=>{
-//     //initial position 0, 3, 20
-//     camera.position.set(0 + zombie.position.x, camera.position.y, 20 + zombie.position.z); //offset camera so doesn't spawn in model
-// }
 
 const updateDifficulty=()=>{
     //skip check if game just started
@@ -139,12 +87,12 @@ const updateDifficulty=()=>{
     }
     //every 30s enemies gain health
     if ((Date.now() - startTime) / 1000 % 30){
-        enemyHealth += 5;
+        setEnemyHealth(enemyHealth + 5);
         console.log("Upping diificulty");
     }
     //every 60s enemies spawn faster
     if ((Date.now() - startTime) /1000 % 60){
-        spawnRate * 0.85; //spawn faster
+        setSpawnRate(spawnRate*0.85); //spawn faster
         console.log("Upping diificulty");
     }
 }
@@ -176,7 +124,7 @@ const animate=()=> {
 
         //animating water plane
         animateWaterPlane(waterGeometry, waterVertexCount);
-
+        //animatePlane(waterGeometry, waterVertexCount);
         //const animationId = requestAnimationFrame(animate);
 
 
@@ -192,10 +140,9 @@ const animate=()=> {
         //check for collision between player and enemy
         if (boxCollision({box1: zombie, box2: enemy})){
             console.log("boom");
-            playerHealth--; //decrement player health
+            zombie.currentHealth--; //decrement player health
             
-            let healthText = "Health: "; //reset health UI text
-            document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
+            setHealthText("Health: ".concat(zombie.currentHealth, "/", zombie.maxHealth, "HP"));
             //cancelAnimationFrame(animationId);
         }
 
@@ -209,18 +156,18 @@ const animate=()=> {
 
 
         renderer.render(scene, camera); //render scene
-        frames++; //increment frame number
+        setFrames(frames+1); //increment frame number
 
         checkIfDrowned();
 
         let timerText = "Timer: "; //reset time UI text
 
         //check if player has died this frame
-        if (playerHealth <= 0 && !playerIsDead){
-            playerHealth = 0; //make sure health cant go below 0
+        if (zombie.currentHealth <= 0 && !zombie.isDead){
+            zombie.currentHealth = 0; //make sure health cant go below 0
         
             let survivalTime = (Date.now() - startTime) /1000;
-            playerIsDead = true;
+            zombie.isDead = true;
             //stop timer
             timerText = "You survived: "; //reset time UI text
             document.getElementById("timer-display").innerHTML = timerText.concat(survivalTime).concat("s");
@@ -236,16 +183,15 @@ const animate=()=> {
             
         } 
         //if player is not dead
-        if (!playerIsDead){
+        if (!zombie.isDead){
             //update timer
             document.getElementById("timer-display").innerHTML = timerText.concat((Date.now() - startTime) /1000);
         }
         //if player is dead
         else{
-            playerHealth = 0; //make sure health cant go below 0
+            zombie.currentHealth = 0; //make sure health cant go below 0
             //make health display
-            let healthText = "Health: "; //reset health UI text
-            document.getElementById("health-display").innerHTML = healthText.concat(playerHealth, "/", playerMaxHealth, "HP"); //display correct health value
+            setHealthText("Health: ".concat(zombie.currentHealth, "/", zombie.maxHealth, "HP"));
             //THREE.AnimationAction.timeScale = 0;
             
             //display death screen
@@ -255,7 +201,7 @@ const animate=()=> {
             
             
 
-            isPaused = true;
+            setIsPaused(true);
         }
     }
     
@@ -298,8 +244,6 @@ const sandPlane = addPlane(0,ground.topPosition + 0.01, 200, 150, sandPlaneMater
 sandPlane.position.z = -30;
 
 
-//add water plane
-scene.add(waterPlane);
 
 //create boundary walls
 const wallLeft = new Box({width: 10, height: 10, depth: 120, color: 0xccccc, pos: {x: -80, y: 0, z:-10}});
@@ -317,14 +261,14 @@ for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
     const zPos = Math.random() * (30 - -40) + (-40);
     //createTree(scene, xPos, 0, zPos);
     trees.push(new Tree(scene, xPos, 0, zPos));
+    //ships.push(new Ship(scene, xPos, 0, zPos));
+    
 }
 
 
 
 
-//create player zombie
-const zombie = new CharacterController({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: 0, y: -3, z: 0}, speed: 0.01, manager: loadingManager});
-zombie.loadModel(scene);
+
 
 
 

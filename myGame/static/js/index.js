@@ -16,12 +16,19 @@
         const data = await response.json(); //makes sure method is called properly
                         
         console.log("Received data", data); //output data received from server
-        //display data on page
+        //if account is logged in, show play or logout button
         if (data){
             document.getElementById("logout-btn").style = "display: block;";
+            document.getElementById("play-btn").style = "display: block;";
+            document.getElementById("login-btn").style = "display: none;";
+            document.getElementById("register-btn").style = "display: none;";
         }
+        //no account logged in, show login and register button
         else{
             document.getElementById("logout-btn").style = "display: none;";
+            document.getElementById("play-btn").style = "display: none;";
+            document.getElementById("login-btn").style = "display: block;";
+            document.getElementById("register-btn").style = "display: block;";
         }
     } 
     catch (error) {

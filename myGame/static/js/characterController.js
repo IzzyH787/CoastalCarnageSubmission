@@ -1,6 +1,8 @@
 import * as THREE from 'three'; //import three.js
 import {FBXLoader} from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FBXLoader.js"; //import fbx loader
 
+
+
 export class CharacterController{
 
 
@@ -58,6 +60,13 @@ export class CharacterController{
         this.characterMixer = new THREE.AnimationMixer; //animation mixel for model
         this.characterActions = {}; //array of all animation actions
         this.activeAction;
+
+        //health
+
+        this.maxHealth = 10;
+        this.currentHealth = this.maxHealth;
+        this.isDead = false;
+        this.isDrowned = false;
 
 
 

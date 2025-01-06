@@ -4,8 +4,6 @@
 const express = require('express');
 const app = express();
 const bcrypt = require("bcrypt"); //import bcrypt package
-const flash = require("express-flash");
-//const session = require("express-session");
 const util = require("util");
 
 
@@ -18,11 +16,15 @@ var mysql = require('mysql');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-let confirmedID;
-let confirmedUsername;
-let confirmedHighscore;
-let confirmedGamesPlayed;
-let dataJson;
+let confirmedID = null;
+let confirmedUsername = null;
+let confirmedHighscore = null;
+let confirmedGamesPlayed = null;
+let dataJson = { 
+  username: confirmedUsername, 
+  highscore: confirmedHighscore, 
+  gamesPlayed: confirmedGamesPlayed,
+}; 
 let prevLoginStatus = 99;
 let prevRegisterStatus = 99;
 
@@ -45,7 +47,6 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 //for parsing form data
 app.use(express.urlencoded({extended: true}));
-app.use(flash());
 app.use(express.json());
 
 
@@ -57,22 +58,22 @@ app.post("/get-details", jsonParser, (req, res)=>{
         const query = util.promisify(con.query).bind(con); //make con.query a promie-based funciton, allows use of await to wait until query complete
         //run async function to run asychronous code immediately
         const result = await query("SELECT * FROM user WHERE username = ?", [confirmedUsername]); //await makes rest of code wait until query finishes
-
-        //confirmedID = result[0].id;
+        //set variables from read result in database
         confirmedUsername = result[0].username;
         confirmedHighscore = result[0].highscore; 
         confirmedGamesPlayed = result[0].games_played; 
 
         console.log("Read from data base your ID is ", confirmedID, "your highscore is ", confirmedHighscore, "and you have played", confirmedGamesPlayed);
 
-        //make json object of player's username, highscore and games played from database
+        //set json object of player's username, highscore and games played from database
         dataJson = { 
           username: confirmedUsername, 
           highscore: confirmedHighscore, 
           gamesPlayed: confirmedGamesPlayed,
         }; 
 
-        console.log(dataJson); 
+        console.log(dataJson);  //output json object
+        //handle errors if dataJson is not defined 
         if(!dataJson){
           console.log("Json not defined yet");
           return res.status(500).json({ error: "No data to get !" }); // handles errors
@@ -128,20 +129,7 @@ app.post("/check-register", jsonParser, (req, res)=>{
   }
 });
 
-app.post("/log-out", jsonParser, (req, res)=>{
-  try {
-    console.log("logged out");
-    confirmedID = null;
-    confirmedUsername = null;
-    confirmedHighscore = null;
-    confirmedGamesPlayed = null;
-    dataJson = null;
-    
-  }
-  catch (error) {
-    console.log(error);
-  }
-});
+
 
 app.get('/log-out', (req, res) => {
   try {
@@ -150,7 +138,11 @@ app.get('/log-out', (req, res) => {
     confirmedUsername = null;
     confirmedHighscore = null;
     confirmedGamesPlayed = null;
-    dataJson = null;
+    dataJson = { 
+      username: confirmedUsername, 
+      highscore: confirmedHighscore, 
+      gamesPlayed: confirmedGamesPlayed,
+    }; 
     res.sendFile(__dirname + '/index.html');
     
   }
@@ -202,8 +194,9 @@ app.post("/register", async (req, res) =>{
             containsNumber = /\d/.test(req.body.password);
             containsCapital = /[A-Z]/.test(req.body.password);
             containsSymbol = /[!"£$%^&*()-_+=|,<>./?;:'@#~]/.test(req.body.password);
-            console.log(containsNumber, containsCapital, containsSymbol);
-            if (containsNumber && containsCapital && containsSymbol){
+            longEnough = req.body.password.length >= 8;
+            console.log(containsNumber, containsCapital, containsSymbol, longEnough);
+            if (containsNumber && containsCapital && containsSymbol && longEnough){
               const hashedPassword = await bcrypt.hash(req.body.password, 10); //take inputted password hashes it and makes sure it is completed hashing before continuing
               console.log(hashedPassword);
               //add details to database
@@ -364,12 +357,12 @@ app.get('/index', (req, res) => {
   app.get('/game', (req, res) => {
     res.sendFile(__dirname + '/game.html');
   });
-  app.get('/login-failed', (req, res) => {
-    res.sendFile(__dirname + '/login-failed.html');
-  });
-  app.get('/auth', (req, res) => {
-    res.sendFile(__dirname + '/login.html');
-  });
+  // app.get('/login-failed', (req, res) => {
+  //   res.sendFile(__dirname + '/login-failed.html');
+  // });
+  // app.get('/auth', (req, res) => {
+  //   res.sendFile(__dirname + '/login.html');
+  // });
 
 
   app.get('*', (req, res) => {

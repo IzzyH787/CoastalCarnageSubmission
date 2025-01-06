@@ -37,7 +37,7 @@
     <div id = "scene-container">
         <!-- background audio for game-->  
         <audio loop autoplay muted>
-            <source src = "resources/audio/background-music.mp3" type = "audio/mpeg">
+            <source src = "resources/audio/background-music.mp3" type = "audio/mpeg">sdwas
         </audio>  
     </div>
     
@@ -54,10 +54,15 @@
         }
     }
     </script>
-    <!--referencing/calling main.js script-->
-    <script type="module" src="js/main.js"></script>
+    <!--referencing/calling js scripts-->
+    <script type="module" src="js/rendererManager.js" ></script> <!--sets up renderer-->
+    <script type="module" src="js/loadingScreen.js" ></script> <!--defines loading manager-->
+    <script type="module" src="js/gameData.js" ></script> <!--defines variables and reads data initially-->
+    <script type="module" src="js/audioManager.js" ></script> <!--defines variables for sound effects-->
+    <script type="module" src="js/waterManager.js" ></script> <!--creates stuff for water plane-->
+    <script type="module" src="js/main.js"></script> <!--runs code for main game-->
 
-    <script type="module" src="js/gameData.js" ></script>
+    
 
 
     

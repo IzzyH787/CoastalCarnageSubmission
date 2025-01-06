@@ -1,6 +1,18 @@
 import * as THREE from 'three'; //import three.js
 import {FBXLoader} from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FBXLoader.js"; //import fbx loader
 
+export let spawnRate = 1000; //how many frames until another enemy will spawn
+export let enemyHealth = 10;
+export let speed = 0.05;
+export const enemies = []; //create array to store enemies
+
+//get set methods
+
+export const setEnemyHealth=(value)=>{enemyHealth = value;}
+export const setSpawnRate=(value)=>{spawnRate = value;}
+
+//funnction for spawning enemies
+
 export const spawnEnemy=(scene)=>{
     const randomX = Math.random() * (70 - -70) + (-70); //spawn in random x position
     const spawnPosition = new THREE.Vector3(randomX, -3, 30); //spawn along water edge
