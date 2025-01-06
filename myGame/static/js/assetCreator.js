@@ -7,7 +7,7 @@ import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders
 /////////////DECLARING VARIABLES//////////////////
 const textureLoader = new THREE.TextureLoader();
 
-
+///////////////DEFINING FUNCTIONS////////////////////
 //create plane funcion
 export const addPlane=(x, y, w, h, material, scene)=>{
     //initialise plane
@@ -18,7 +18,6 @@ export const addPlane=(x, y, w, h, material, scene)=>{
     scene.add(plane)
     return plane
 }
-
 //creates skybox
 export const createSkybox=(scene)=>{
     let backgroundMesh; //variable for sphere mesh
@@ -65,7 +64,20 @@ export const createManyObjects=(scene)=>{
     }
 }
 
-
+export const createSand=(scene, ground, loadingManager)=>{
+    //load sand texture from external file
+    const sandTexture = new THREE.TextureLoader(loadingManager).load('resources/images/sand.jpg');
+    //ensure texture repeats if offset
+    sandTexture.wrapS = THREE.RepeatWrapping;
+    sandTexture.wrapT = THREE.RepeatWrapping;
+    sandTexture.repeat.set( 2, 2 ); //how many times texture repeats across plane
+    //initialise properties for sand material
+    const sandPlaneMaterialProperties = {map: sandTexture, side: THREE.DoubleSide, transparent: true, repeat: 10};
+    //add sand plane to scene
+    const sandPlane = addPlane(0,ground.topPosition + 0.01, 200, 150, sandPlaneMaterialProperties, scene);
+    //position so appears above ground
+    sandPlane.position.z = -30;
+}
 ///////////////////MAIN LOGIC////////////////
 
 
@@ -89,6 +101,8 @@ const waterPlane = new THREE.Mesh(waterGeometry, waterMaterial); //create mesh f
 const waterVertexCount = waterGeometry.attributes.position.count;  //get number of vertices on plane
 waterPlane.position.set(0, -4.5, 50); //set position of plane
 waterPlane.rotation.x = ((2 *Math.PI) / 360) * 85; //rotate plane so below ground
+
+
 
 
 //export necessary variables

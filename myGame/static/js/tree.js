@@ -10,6 +10,14 @@ export const trees = []; //create array to store trees
 
 
 //////////////FUNCTIONS/////////////////
+export const spawnTrees=(scene)=>{
+    //add trees to scene in random places
+    for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
+        const xPos = Math.random() * (70 - -70) - 70; //pick random x position
+        const zPos = Math.random() * (30 - -40) + (-40); //pick random z position
+        trees.push(new Tree(scene, xPos, 0, zPos)); //add trees to array
+    }
+}
 
 export class Tree{
     constructor(scene, x, y, z){

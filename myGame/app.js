@@ -49,7 +49,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-
+//function for reading user data from database
 app.post("/get-details", jsonParser, (req, res)=>{
   try{
 
@@ -94,6 +94,8 @@ app.post("/get-details", jsonParser, (req, res)=>{
 
 });
 
+
+//function for sending user data from database
 app.post("/send-details", jsonParser, (req, res)=>{
   try {
     console.log("updating database");
@@ -109,6 +111,7 @@ app.post("/send-details", jsonParser, (req, res)=>{
   }
 });
 
+//when login page refreshes check if there is an error message that should be displayed from previous failed login
 app.post("/check-login", jsonParser, (req, res)=>{
   try {
     console.log("checking previous login attempt");
@@ -119,6 +122,7 @@ app.post("/check-login", jsonParser, (req, res)=>{
   }
 });
 
+//when register page refreshes check if there is an error message that should be displayed from previous failed register
 app.post("/check-register", jsonParser, (req, res)=>{
   try {
     console.log("checking previous login attempt");
@@ -130,10 +134,11 @@ app.post("/check-register", jsonParser, (req, res)=>{
 });
 
 
-
+//funciton to log player out
 app.get('/log-out', (req, res) => {
   try {
     console.log("logged out");
+    //set all variables to null so cant access user data anymore
     confirmedID = null;
     confirmedUsername = null;
     confirmedHighscore = null;
@@ -142,8 +147,8 @@ app.get('/log-out', (req, res) => {
       username: confirmedUsername, 
       highscore: confirmedHighscore, 
       gamesPlayed: confirmedGamesPlayed,
-    }; 
-    res.sendFile(__dirname + '/index.html');
+    };
+    res.sendFile(__dirname + '/index.html'); //display index page
     
   }
   catch (error) {
@@ -152,17 +157,16 @@ app.get('/log-out', (req, res) => {
   
 });
 
-//configuring register post functionality
+//funciton for registerring account
 app.post("/register", async (req, res) =>{
   try {
-    //trim() removes all whitespace from value, checks that actual values have been inputted
-    
+    //trim() removes all whitespace from value, checks that actual values have been inputted   
     if (req.body.username.trim().length == 0 || req.body.password.trim().length == 0 ){
-      prevRegisterStatus = 0;
+      prevRegisterStatus = 0; //display correct error 
       console.log("Missing credentials, try again");
       res.redirect("/register"); //reload register page
     }
-    ///////////////////ADD VALIDATION WHEN CREATING PASSWORDS///////////
+    //username and password both have input
     else{
       //check if username already exists in user table
       con.query("SELECT username FROM user WHERE username = ?",
@@ -174,7 +178,7 @@ app.post("/register", async (req, res) =>{
         //check if result array has any entries
         if (result.length > 0){
           console.log("found user");
-          prevRegisterStatus = 1; //siplay error mess
+          prevRegisterStatus = 1; //dsiplay error message
           res.redirect("/register"); //reload register page
           
         }
@@ -185,7 +189,7 @@ app.post("/register", async (req, res) =>{
           console.log(req.body.username.trim().length, req.body.username.length);
           // \s matches any whitespace character, including spaces, tabs, and newlines
           if (/\s/.test(req.body.username) || /\s/.test(req.body.password)){
-            prevRegisterStatus = 2;
+            prevRegisterStatus = 2; //dsiplay error message
             console.log("Username or password can't contain spaces");
             res.redirect("/register"); //reload register page
           }
@@ -214,13 +218,11 @@ app.post("/register", async (req, res) =>{
                   if (err) throw err;
                   console.log(result);
                 });
-                
-                //redirect to login page
                 res.redirect("/login"); //redirect user to login page
             }
             //password is too weak
             else{
-              prevRegisterStatus = 3;
+              prevRegisterStatus = 3; //dsiplay error message
               console.log("Password too weak");
               res.redirect("/register"); //reload register page
             }
@@ -237,7 +239,7 @@ app.post("/register", async (req, res) =>{
   }
 })
 
-//configuring register post functionality
+//function to login to accounts
 app.post("/login", async (req, res) =>{
   try {
     //trim() removes all whitespace from value, checks that actual values have been inputted
@@ -265,14 +267,8 @@ app.post("/login", async (req, res) =>{
             [req.body.username],
             async (err, result, fields)=> {
               //check if inputted password matches database password
-              //match = await bcrypt.compare(req.body.password, result[0].password); //check against stored hash value
               if (await bcrypt.compare(req.body.password, result[0].password)){
                 console.log("Welcome to the game " + req.body.username);
-
-                
-
-                /////////////SEND DATA TO BE LOADED BY GAME//////////////
-                
 
                 const query = util.promisify(con.query).bind(con); //make con.query a promie-based funciton, allows use of await to wait until query complete
                 //run async function to run asychronous code immediately
@@ -357,31 +353,13 @@ app.get('/index', (req, res) => {
   app.get('/game', (req, res) => {
     res.sendFile(__dirname + '/game.html');
   });
-  // app.get('/login-failed', (req, res) => {
-  //   res.sendFile(__dirname + '/login-failed.html');
-  // });
-  // app.get('/auth', (req, res) => {
-  //   res.sendFile(__dirname + '/login.html');
-  // });
-
 
   app.get('*', (req, res) => {
-    //_dirname
     //console.log(__dirname);
     res.status(404).sendFile(__dirname + '/error404.html');
   });
 //end of routes
 
-
-
-
-
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
-
-
-// //decode json in route 
-// app.post('api/users', jsonParser, (req, res)=>{
-//   //create user
-// });

@@ -13,14 +13,18 @@ export const setSpawnRate=(value)=>{spawnRate = value;}
 
 //funnction for spawning enemies
 
-export const spawnEnemy=(scene)=>{
-    const randomX = Math.random() * (70 - -70) + (-70); //spawn in random x position
-    const spawnPosition = new THREE.Vector3(randomX, -3, 30); //spawn along water edge
-    //create new enemy object       
-    let newEnemy = new Enemy({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: spawnPosition.x, y: spawnPosition.y, z: spawnPosition.z}, health: 10});
-    newEnemy.loadModel(scene); //load models for enemy
-    console.log("Spawn enemy!"); //write message to console
-    return newEnemy;
+export const spawnEnemy=(scene, currentFrame)=>{
+    if (currentFrame % spawnRate == 0){
+        const randomX = Math.random() * (70 - -70) + (-70); //spawn in random x position
+        const spawnPosition = new THREE.Vector3(randomX, -3, 30); //spawn along water edge
+        //create new enemy object       
+        let newEnemy = new Enemy({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: spawnPosition.x, y: spawnPosition.y, z: spawnPosition.z}, health: 10});
+        newEnemy.loadModel(scene); //load models for enemy
+        console.log("Spawn enemy!"); //write message to console
+        enemies.push(newEnemy);
+        return newEnemy;
+    }
+    
 }
 
 export class Enemy{
