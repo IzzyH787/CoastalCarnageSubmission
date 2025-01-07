@@ -1,12 +1,8 @@
-
-
 //importing libraries
 const express = require('express');
 const app = express();
 const bcrypt = require("bcrypt"); //import bcrypt package
 const util = require("util");
-
-
 
 const port = 3000;
 const path = require('path');
@@ -27,7 +23,6 @@ let dataJson = {
 }; 
 let prevLoginStatus = 99;
 let prevRegisterStatus = 99;
-
 
 var con = mysql.createConnection({
   host: "localhost",
@@ -94,7 +89,6 @@ app.post("/get-details", jsonParser, (req, res)=>{
 
 });
 
-
 //function for sending user data from database
 app.post("/send-details", jsonParser, (req, res)=>{
   try {
@@ -132,7 +126,6 @@ app.post("/check-register", jsonParser, (req, res)=>{
     console.log(error);
   }
 });
-
 
 //funciton to log player out
 app.get('/log-out', (req, res) => {
@@ -329,18 +322,10 @@ app.post("/login", async (req, res) =>{
   }
 });
 
-
-
-
-
-
-
-
 //routes
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-
 app.get('/index', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   });
@@ -353,9 +338,7 @@ app.get('/index', (req, res) => {
   app.get('/game', (req, res) => {
     res.sendFile(__dirname + '/game.html');
   });
-
   app.get('*', (req, res) => {
-    //console.log(__dirname);
     res.status(404).sendFile(__dirname + '/error404.html');
   });
 //end of routes

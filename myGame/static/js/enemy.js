@@ -20,7 +20,7 @@ export const spawnEnemy=(scene, currentFrame)=>{
         //create new enemy object       
         let newEnemy = new Enemy({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: spawnPosition.x, y: spawnPosition.y, z: spawnPosition.z}, health: 10});
         newEnemy.loadModel(scene); //load models for enemy
-        console.log("Spawn enemy!"); //write message to console
+        //console.log("Spawn enemy!"); //write message to console
         enemies.push(newEnemy);
         return newEnemy;
     }
@@ -198,6 +198,21 @@ export class Enemy{
             this.velocity.z = 0;
         }
     }
+    checkForTree=(trees)=>{
+        
+        trees.forEach(tree => {
+            console.log("checking for trees:", tree.position);
+            console.log("enemy position:", this.position);
+            if (this.hasBoxCollision({box1: this, box2: tree})){
+                console.log("hit tree");
+                this.position.x -= this.velocity.x; //undo players move
+                this.position.z -= this.velocity.z; //undo players move
+                this.velocity.x = 0; //stop player moving
+                this.velocity.z = 0; //stop player moving
+            }
+        });
+        
+    }
 
     trackPlayer=(_player)=>{
         //get direction enemy needs to go towards player
@@ -208,28 +223,7 @@ export class Enemy{
         //update rotation
         //initially facing (0, 0, 1)
         const angle = Math.atan2(this.velocity.x, this.velocity.z); //finds angle between vectors
-        console.log("Angle:");
-        console.log(angle);
         this.characterModel.rotation.y = angle;
-        
-        // if (this.velocity.x > 0 && this.velocity.z > 0){
-        //     this.characterModel.rotation.y = (Math.PI / 4) - angle;
-        // }
-        // else if (this.velocity.x > 0 && this.velocity.z < 0){
-        //     this.characterModel.rotation.y = (Math.PI / 4) + angle;
-        // }
-        // else if (this.velocity.x < 0 && this.velocity.z > 0){
-        //     this.characterModel.rotation.y = -((Math.PI / 4) - angle);
-        // }
-        // else if (this.velocity.x < 0 && this.velocity.z < 0){
-        //     this.characterModel.rotation.y = -((Math.PI / 4) + angle);
-        // }
-        // //if not moving (on top of player)
-        // else{
-        //     this.characterModel.rotation.y = 0;
-        // }
-        
-        
     }
     
 
@@ -237,7 +231,7 @@ export class Enemy{
     /////////////////UPDATE CALLED EVERY FRAME////////////////////////////
 
 
-    Update(ground, deltaTime, _wallLeft, _wallRight, _wallBack, _player){
+    Update(ground, deltaTime, _wallLeft, _wallRight, _wallBack, _player, trees){
         //quit method if object not fully loaded
         if (!this.ready || !this.characterModel){
             return;
@@ -264,6 +258,7 @@ export class Enemy{
         this.updateSides();
 
         this.checkForWalls({wallLeft: _wallLeft, wallRight: _wallRight, wallBack: _wallBack});
+        this.checkForTree(trees);
 
         //update animation of enemy
         if (this.velocity != new THREE.Vector3(0,0,0)){

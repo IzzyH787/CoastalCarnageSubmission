@@ -13,8 +13,15 @@ export const trees = []; //create array to store trees
 export const spawnTrees=(scene)=>{
     //add trees to scene in random places
     for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
-        const xPos = Math.random() * (70 - -70) - 70; //pick random x position
-        const zPos = Math.random() * (30 - -40) + (-40); //pick random z position
+        let xPos = Math.random() * (70 - -70) + (-70); //pick random x position
+        let zPos = Math.random() * (30 - -40) + (-40); //pick random z position
+        //ensure tree cant spawn on player
+        if (xPos > -10 && xPos < 10){
+            xPos += Math.random() * (70 - 10) + 10;
+        }   
+        if (zPos > -10 && zPos < 10){
+            zPos += Math.random() * (30 - 10) + 10;
+        }      
         trees.push(new Tree(scene, xPos, 0, zPos)); //add trees to array
     }
 }
@@ -44,6 +51,8 @@ export class Tree{
         treeGroup.add(topLeaves);
         //set position of tree
         treeGroup.position.set(x, y, z);
+        this.position = new THREE.Vector3(treeGroup.position.x, treeGroup.position.y, treeGroup.position.z);
+        console.log("tree position", this.position);
         //add tree to scene
         scene.add(treeGroup);
         this.Init(x, y, z);
@@ -53,14 +62,12 @@ export class Tree{
         this.position = new THREE.Vector3(x, y, z);
         //this.radius = leafRadius;
         //define sides of model for collison
-        //this.bottomPosition = this.position.y - this.height / 2;
-        //this.topPosition = this.position.y + this.height / 2;
         this.leftPosition = this.position.x - this.radius / 2;
         this.rightPosition = this.position.x + this.radius / 2;
         this.frontPosition = this.position.z + this.radius / 2;
         this.backPosition = this.position.z - this.radius / 2;
-        this.topPosition = this.position.y;
-        this.bottomPosition = this.position.y;
+        this.topPosition = 5; //estimate for top position as height doesnt matter for collision
+        this.bottomPosition = -5; //estimate for top position as height doesnt matter for collision
     }
     //check if 2 boxes overlap
     hasBoxCollision=({box1, box2})=>{

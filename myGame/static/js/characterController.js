@@ -133,12 +133,20 @@ export class CharacterController{
             this.velocity.z = 0;
         }
     }
-    checkForTree=(tree)=>{
-        if (this.hasBoxCollision({box1: this, box2: tree})){
-            this.velocity.x = 0;
-            this.position.z += this.speed;
-            this.velocity.z = 0;
-        }
+    checkForTree=(trees)=>{
+        
+        trees.forEach(tree => {
+            console.log("checking for trees:", tree.position);
+            console.log("player position:", this.position);
+            if (this.hasBoxCollision({box1: this, box2: tree})){
+                console.log("hit tree");
+                this.position.x -= this.velocity.x; //undo players move
+                this.position.z -= this.velocity.z; //undo players move
+                this.velocity.x = 0; //stop player moving
+                this.velocity.z = 0; //stop player moving
+            }
+        });
+        
     }
 
 
@@ -249,7 +257,7 @@ export class CharacterController{
     /////////////////UPDATE CALLED EVERY FRAME////////////////////////////
 
 
-    Update(ground, deltaTime, _wallLeft, _wallRight, _wallBack){
+    Update(ground, deltaTime, _wallLeft, _wallRight, _wallBack, trees){
         //quit method if object not fully loaded
         if (!this.ready || !this.characterModel){
             return;
@@ -264,7 +272,7 @@ export class CharacterController{
             this.updateAnimation('walk');
             //rotate player model
             this.characterModel.rotation.y = Math.PI;
-            console.log(this.characterModel.rotation);
+            //console.log(this.characterModel.rotation);
         }
 
 
@@ -347,7 +355,7 @@ export class CharacterController{
         this.updateSides();
 
         this.checkForWalls({wallLeft: _wallLeft, wallRight: _wallRight, wallBack: _wallBack});
-
+        this.checkForTree(trees);
         
         //update animation mixer
         if (this.characterMixer) this.characterMixer.update(deltaTime);

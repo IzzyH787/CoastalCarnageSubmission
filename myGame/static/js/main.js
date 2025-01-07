@@ -72,12 +72,12 @@ const updateDifficulty=()=>{
         return;
     }
     //every 30s enemies gain health
-    if ((Date.now() - startTime) / 1000 % 30){
+    if (((Date.now() - startTime) / 1000) % 30 == 0){
         setEnemyHealth(enemyHealth + 5);
         console.log("Upping diificulty");
     }
     //every 60s enemies spawn faster
-    if ((Date.now() - startTime) /1000 % 60){
+    if (((Date.now() - startTime) /1000) % 60 == 0){
         setSpawnRate(spawnRate*0.85); //spawn faster
         console.log("Upping diificulty");
     }
@@ -96,7 +96,7 @@ const animate=()=> {
         //animating water plane
         animateWaterPlane(waterGeometry, waterVertexCount);
         //update zombie animation mixer
-        zombie.Update(ground, delta, wallLeft, wallRight, wallBack); //update zombie object  
+        zombie.Update(ground, delta, wallLeft, wallRight, wallBack, trees); //update zombie object  
         //see if difficulty needs scaling
         updateDifficulty();
         //update stats (fps) display
@@ -105,7 +105,7 @@ const animate=()=> {
         spawnEnemy(scene, frames);       
         //update enemies
         enemies.forEach((enemy) => {
-        enemy.Update(ground, delta, wallLeft, wallRight, wallBack, zombie);
+        enemy.Update(ground, delta, wallLeft, wallRight, wallBack, zombie, trees);
         //check for collision between player and enemy
         if (boxCollision({box1: zombie, box2: enemy})){
             console.log("boom");
