@@ -201,10 +201,10 @@ export class Enemy{
     checkForTree=(trees)=>{
         
         trees.forEach(tree => {
-            console.log("checking for trees:", tree.position);
-            console.log("enemy position:", this.position);
+            //console.log("checking for trees:", tree.position);
+            //console.log("enemy position:", this.position);
             if (this.hasBoxCollision({box1: this, box2: tree})){
-                console.log("hit tree");
+                //console.log("hit tree");
                 this.position.x -= this.velocity.x; //undo players move
                 this.position.z -= this.velocity.z; //undo players move
                 this.velocity.x = 0; //stop player moving
@@ -212,6 +212,26 @@ export class Enemy{
             }
         });
         
+    }
+    checkForBullet=(bullets, scene)=>{
+        bullets.forEach(bullet => {
+            console.log(bullet.position, this.position);
+            //console.log("checking for trees:", tree.position);
+            //console.log("enemy position:", this.position);
+            if (this.hasBoxCollision({box1: this, box2: bullet})){
+                console.log("enemy shot");
+                scene.remove(bullet); //hide bullet, will be removed once out of bounds
+                const enemyIndex = enemies.indexOf(this); //find position of this enemy in enemy array
+                //check index is in array
+                if (enemyIndex > -1) {
+                    if (this.parent) {
+                        this.parent.remove(this);
+                    }
+                    scene.remove(this); // remove enemy from the scene
+                    enemies.splice(enemyIndex, 1); // remove enemy from the enemies array
+                }
+            }
+        });
     }
 
     trackPlayer=(_player)=>{
@@ -231,7 +251,7 @@ export class Enemy{
     /////////////////UPDATE CALLED EVERY FRAME////////////////////////////
 
 
-    Update(ground, deltaTime, _wallLeft, _wallRight, _wallBack, _player, trees){
+    Update(scene, ground, deltaTime, _wallLeft, _wallRight, _wallBack, _player, trees, bullets){
         //quit method if object not fully loaded
         if (!this.ready || !this.characterModel){
             return;
@@ -259,6 +279,7 @@ export class Enemy{
 
         this.checkForWalls({wallLeft: _wallLeft, wallRight: _wallRight, wallBack: _wallBack});
         this.checkForTree(trees);
+        this.checkForBullet(bullets, scene);
 
         //update animation of enemy
         if (this.velocity != new THREE.Vector3(0,0,0)){

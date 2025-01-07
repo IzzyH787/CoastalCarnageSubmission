@@ -28,6 +28,7 @@ import { saveData, readData } from './gameData.js';
 
 const scene = new THREE.Scene(); //create scene
 const loader = new THREE.TextureLoader(loadingManager);
+let bullets = []; //create array to store bullets
 
 //create player: zombie
 const zombie = new CharacterController({width: 5, height: 4, depth: 5, velocity: {x: 0, y:-0.01, z:0}, pos: {x: 0, y: -3, z: 0}, speed: 0.01, manager: loadingManager});
@@ -64,6 +65,24 @@ const checkIfDrowned=()=>{
         
     }
 }
+//funciton to check if player is shooting
+const checkIfShooting=()=>{
+    if(zombie.shooting && bullets.length < 10){
+        console.log("shooting");
+        const bullet = new Box({width: 0.8, height: 0.8, depth: 0.8, color: '#00ff00', velocity: {x: 0, y: 0, z: 1}, pos: {x: zombie.characterModel.position.x, y: -1, z: zombie.characterModel.position.z}});
+        //const newBullet = new Bullet(zombie);
+        bullets.push(bullet);
+        scene.add(bullet);
+    }
+}
+
+const checkBullets=()=>{
+    //removes bullets from array that have left bounds
+    bullets = bullets.filter(bullet => {
+        return !(bullet.position.x > 70 || bullet.position.x < -70 || bullet.position.z > 80 || bullet.position.z < -80);
+    });
+}
+
 
 
 const updateDifficulty=()=>{
@@ -105,7 +124,7 @@ const animate=()=> {
         spawnEnemy(scene, frames);       
         //update enemies
         enemies.forEach((enemy) => {
-        enemy.Update(ground, delta, wallLeft, wallRight, wallBack, zombie, trees);
+        enemy.Update(scene, ground, delta, wallLeft, wallRight, wallBack, zombie, trees, bullets);
         //check for collision between player and enemy
         if (boxCollision({box1: zombie, box2: enemy})){
             console.log("boom");
@@ -115,8 +134,20 @@ const animate=()=> {
             //cancelAnimationFrame(animationId);
         }
         })
+        //update bullets
+        bullets.forEach((bullet) =>{
+            //move bulllet
+            bullet.position.x += bullet.velocity.x;
+            bullet.position.z += bullet.velocity.z;
+            //update bounds of bullets
+            bullet.updateSides();
+        })
+        //check if any bullets have left bounds of game
+        checkBullets();
         //check if player has drowned this frame
         checkIfDrowned();
+        //check if shooting
+        checkIfShooting();
 
         renderer.render(scene, camera); //render scene
         setFrames(frames+1); //increment frame number
@@ -202,6 +233,9 @@ const keys = {
     },
     s: {
         pressed: false
+    },
+    space: {
+        pressed: false
     }
     
 }
@@ -218,6 +252,9 @@ window.addEventListener('keydown', (event) => {
             break;
         case 'KeyD':
             keys.d.pressed = true;
+            break;
+        case 'Space':
+            keys.space.pressed = true;
             break;
         default:         
             break;     
@@ -236,6 +273,9 @@ window.addEventListener('keyup', (event) => {
             break;
         case 'KeyD':
             keys.d.pressed = false;
+            break;
+        case 'Space':
+            keys.space.pressed = true;
             break;
         default:
             break;
@@ -256,6 +296,9 @@ const moveLeft =()=>{
 }
 const moveRight=()=>{
     zombie.move.right = true;
+}
+const shoot=()=>{
+
 }
 
 

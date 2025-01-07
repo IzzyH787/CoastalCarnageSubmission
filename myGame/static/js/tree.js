@@ -52,7 +52,7 @@ export class Tree{
         //set position of tree
         treeGroup.position.set(x, y, z);
         this.position = new THREE.Vector3(treeGroup.position.x, treeGroup.position.y, treeGroup.position.z);
-        console.log("tree position", this.position);
+        //console.log("tree position", this.position);
         //add tree to scene
         scene.add(treeGroup);
         this.Init(x, y, z);

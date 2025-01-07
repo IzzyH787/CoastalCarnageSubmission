@@ -48,6 +48,8 @@ export class CharacterController{
             right: false
         };
 
+        this.shooting = false;
+
         //input listeners
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this.onKeyUp(e), false);
@@ -136,8 +138,8 @@ export class CharacterController{
     checkForTree=(trees)=>{
         
         trees.forEach(tree => {
-            console.log("checking for trees:", tree.position);
-            console.log("player position:", this.position);
+            //console.log("checking for trees:", tree.position);
+            //console.log("player position:", this.position);
             if (this.hasBoxCollision({box1: this, box2: tree})){
                 console.log("hit tree");
                 this.position.x -= this.velocity.x; //undo players move
@@ -172,6 +174,11 @@ export class CharacterController{
             case 68: //d
                 this.move.right = true;
                 break;
+            case 32: // spacebar
+                this.shooting = true; // Assuming `this.move.jump` handles spacebar action
+                break;
+            default:
+                break;
 
         }
     }
@@ -189,6 +196,11 @@ export class CharacterController{
                 break;
             case 68: //d
                 this.move.right = false;
+                break;
+            case 32: // spacebar
+                this.shooting = false; // Assuming `this.move.jump` handles spacebar action
+                break;
+            default:
                 break;
         }
     }
@@ -302,7 +314,11 @@ export class CharacterController{
         else{
             //swap back to idle animation
             this.updateAnimation('idle');
-        }               
+        }     
+        //check if player is shooting
+        if (this.shooting){
+
+        }         
 
         //apply movement
         this.position.x += this.velocity.x;
