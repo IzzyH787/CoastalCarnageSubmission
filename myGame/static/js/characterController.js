@@ -26,6 +26,7 @@ export class CharacterController{
 
         //initial position
         this.position = new THREE.Vector3(pos.x, pos.y, pos.z);
+        this.directionVector = new THREE.Vector3(0, 0, 1);
 
         //define sides of model for collison
         this.bottomPosition = this.position.y - this.height / 2;
@@ -280,6 +281,7 @@ export class CharacterController{
         //handling inputs
         if (this.move.forward){
             this.velocity.z -= this.speed; //move model in scene
+            this.directionVector = new THREE.Vector3(0, 0, -1);
             //change animation to walking
             this.updateAnimation('walk');
             //rotate player model
@@ -290,6 +292,7 @@ export class CharacterController{
 
         else if (this.move.backward){
             this.velocity.z += this.speed; //move model in scene
+            this.directionVector = new THREE.Vector3(0, 0, 1);
             //change animation to walking
             this.updateAnimation('walk');
             //rotate player model
@@ -297,6 +300,7 @@ export class CharacterController{
         }
 
         else if (this.move.right){
+            this.directionVector = new THREE.Vector3(1, 0, 0);
             this.velocity.x += this.speed; //move model in scene
             //change animation to walking
             this.updateAnimation('walk');
@@ -305,6 +309,7 @@ export class CharacterController{
         }
 
         else if (this.move.left){
+            this.directionVector = new THREE.Vector3(-1, 0, 0);
             this.velocity.x -= this.speed; //move model in scene
             //change animation to walking
             this.updateAnimation('walk');

@@ -14,14 +14,14 @@ export const spawnTrees=(scene)=>{
     //add trees to scene in random places
     for (let i = 0; i < Math.random() * (20 - 10) + 10; i++){
         let xPos = Math.random() * (70 - -70) + (-70); //pick random x position
-        let zPos = Math.random() * (30 - -40) + (-40); //pick random z position
+        let zPos = Math.random() * (10 - -40) + (-40); //pick random z position
         //ensure tree cant spawn on player
-        if (xPos > -10 && xPos < 10){
+        if (xPos > -10 && xPos < 10 && zPos > -10 && zPos < 10){
             xPos += Math.random() * (70 - 10) + 10;
         }   
-        if (zPos > -10 && zPos < 10){
-            zPos += Math.random() * (30 - 10) + 10;
-        }      
+        // if (zPos > -10 && zPos < 10){
+        //     zPos += Math.random() * (20 - 10) + 10;
+        // }      
         trees.push(new Tree(scene, xPos, 0, zPos)); //add trees to array
     }
 }

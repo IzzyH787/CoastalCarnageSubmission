@@ -215,11 +215,11 @@ export class Enemy{
     }
     checkForBullet=(bullets, scene)=>{
         bullets.forEach(bullet => {
-            console.log(bullet.position, this.position);
+            //console.log(bullet.position, this.position);
             //console.log("checking for trees:", tree.position);
             //console.log("enemy position:", this.position);
             if (this.hasBoxCollision({box1: this, box2: bullet})){
-                console.log("enemy shot");
+                //console.log("enemy shot");
                 scene.remove(bullet); //hide bullet, will be removed once out of bounds
                 const enemyIndex = enemies.indexOf(this); //find position of this enemy in enemy array
                 //check index is in array

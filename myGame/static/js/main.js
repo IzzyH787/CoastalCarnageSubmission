@@ -18,7 +18,7 @@ import { loadingManager } from './loadingScreen.js';
 import { Enemy, spawnEnemy, spawnRate, enemyHealth, speed, enemies, setEnemyHealth, setSpawnRate } from './enemy.js';
 import { CharacterController } from './characterController.js';
 import {healthText, timerText, dataText, setHealthText, setTimeText, setDataText, setSurvivalText} from './uiManager.js'
-import { playDeathSound } from './audioManager.js';
+import { playDeathSound, playShootSound } from './audioManager.js';
 import { camera, updateCamera } from './cameraManager.js';
 import { saveData, readData } from './gameData.js';
 
@@ -69,17 +69,18 @@ const checkIfDrowned=()=>{
 const checkIfShooting=()=>{
     if(zombie.shooting && bullets.length < 10){
         console.log("shooting");
-        const bullet = new Box({width: 0.8, height: 0.8, depth: 0.8, color: '#00ff00', velocity: {x: 0, y: 0, z: 1}, pos: {x: zombie.characterModel.position.x, y: -1, z: zombie.characterModel.position.z}});
+        const bullet = new Box({width: 0.8, height: 0.8, depth: 0.8, color: '#ff0000', velocity: zombie.directionVector, pos: {x: zombie.characterModel.position.x, y: -1, z: zombie.characterModel.position.z}});
         //const newBullet = new Bullet(zombie);
         bullets.push(bullet);
         scene.add(bullet);
+        playShootSound();
     }
 }
 
 const checkBullets=()=>{
     //removes bullets from array that have left bounds
     bullets = bullets.filter(bullet => {
-        return !(bullet.position.x > 70 || bullet.position.x < -70 || bullet.position.z > 80 || bullet.position.z < -80);
+        return !(bullet.position.x > 90 || bullet.position.x < -90 || bullet.position.z > 80 || bullet.position.z < -80);
     });
 }
 
