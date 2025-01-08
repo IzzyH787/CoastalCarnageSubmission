@@ -67,6 +67,7 @@ app.post("/get-details", jsonParser, (req, res)=>{
           gamesPlayed: confirmedGamesPlayed,
         }; 
 
+
         console.log(dataJson);  //output json object
         //handle errors if dataJson is not defined 
         if(!dataJson){
@@ -198,7 +199,7 @@ app.post("/register", async (req, res) =>{
               console.log(hashedPassword);
               //add details to database
               con.query("INSERT INTO user (username, password) VALUES (?, ?)",
-                //////////////////add eusername and encrypted password to database///////////////////
+                //////////////////add username and encrypted password to database///////////////////
                 [req.body.username.toString(), hashedPassword],
                 (err, result, fields)=>{
                   //debugging
