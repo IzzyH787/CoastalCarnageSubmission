@@ -68,6 +68,7 @@ nav {
     background-color: #9ed1f5;
     border-radius: 5px;
     padding: 5px;
+    font-weight: bold;
 }
 #description-section{
   margin: 5%;;
@@ -81,8 +82,8 @@ nav {
   width: 80%;
   align-self: center;
   font-weight: bold;
-  display: flex;
-  justify-content: right;
+  justify-content: center;
+  align-items: center;
   margin: auto;
 }
 

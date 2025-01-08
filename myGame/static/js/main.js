@@ -147,8 +147,11 @@ const animate=()=> {
         checkBullets();
         //check if player has drowned this frame
         checkIfDrowned();
-        //check if shooting
-        checkIfShooting();
+        //check if shooting, add start delay so character model is loaded in before checking
+        if (frames > 100){
+            checkIfShooting();
+        }
+        
 
         renderer.render(scene, camera); //render scene
         setFrames(frames+1); //increment frame number
@@ -325,11 +328,17 @@ document.getElementById("right-button").addEventListener("mousedown", moveRight)
 document.getElementById("replay-btn").addEventListener("mousedown", ()=>{
     saveData(0);
 });
+document.getElementById("shoot-button").addEventListener("mousedown", ()=>{
+    zombie.shooting = true;
+})
 
 document.getElementById("up-button").addEventListener("mouseup", stopMoveUp);
 document.getElementById("down-button").addEventListener("mouseup", stopMoveDown);
 document.getElementById("left-button").addEventListener("mouseup", stopMoveLeft);
 document.getElementById("right-button").addEventListener("mouseup", stopMoveRight);
+document.getElementById("shoot-button").addEventListener("mouseup", ()=>{
+    zombie.shooting = false;
+})
 
 
 document.getElementById("up-button").addEventListener("touchstart", moveUp);
@@ -340,12 +349,17 @@ document.getElementById("replay-btn").addEventListener("touchstart", ()=>{
     saveData(0);
     readData();
 });
+document.getElementById("shoot-button").addEventListener("touchstart", ()=>{
+    zombie.shooting = true;
+})
 
 document.getElementById("up-button").addEventListener("touchend", stopMoveUp);
 document.getElementById("down-button").addEventListener("touchend", stopMoveDown);
 document.getElementById("left-button").addEventListener("touchend", stopMoveLeft);
 document.getElementById("right-button").addEventListener("touchend", stopMoveRight);
-
+document.getElementById("shoot-button").addEventListener("touchend", ()=>{
+    zombie.shooting = false;
+})
 
 
 

@@ -20,17 +20,35 @@ Open CoastalCarnage/setPath.bat (double-click file)
 Enter into the console 'nodemon myGame/app.js'
 Open Chrome and enter the URL 'http://localhost:3000/index'
 
-
 Running Older version (without server-side support):
 Open Coastal Carnage folder with Visual Studio and run index.html with Live Server 
 OR
 Paste this URL into Chrome: https://izzyh787.github.io/CoastalCarnageSubmission/
 
-
 Controls:
 WASD- Movement
 Space- Shoot
 
+File Structure:
+myGame>
+    static>
+        js> contains all js files except app.js
+        resources>
+            3dmodels> contains fbx and glb 3d models 
+            audio> contains all sound files used in game
+            images> contains any image assets used for game
+            textures> contains image asset used for textures in game
+        style.css : stylesheet for all web pages
+    app.js : server-side js file used for loading all pages and main server-side funcitonality
+    error404.html : displayed when invalid url is visited
+    game-database.sql : exported database from phpMyAdmin that is used for storing user database
+    game.html : web page displayed when player is playing game
+    index.html : first web page player should visit, contains description of game
+    login.html : web page dispplayed for user to login to existing accounts
+    register.html : web page displayed for user to register a new account
+README.txt : this file
+setPath.bat : opens command prompt to run game with node using 'nodemon myGame/app.js'
+     
 Dependences:
 Three.js
 
@@ -45,14 +63,12 @@ Server-side:
 https://www.youtube.com/watch?v=ILviQic0c8g
 https://www.youtube.com/watch?v=S6VE2lsAGo0&t=880s
 https://www.youtube.com/watch?v=heb6C8wHEzs&t=520s
-SQL:
-
 
 Credits:
 
 Textures:
 Water Texture: https://www.vecteezy.com/vector-art/1844212-water-texture-top-view-background-vector-design-illustration
-Sky texture: Unknown
+Sky texture: https://www.freepik.com/free-vector/sky-background-video-conferencing_9444270.htm#fromView=keyword&page=1&position=4&uuid=1a2faa61-689d-4db5-bc00-3d727369d1c5
 Sand texture: https://www.the3rdsequence.com/texturedb/texture/43/smooth+sand+dunes/
 Trunk texture: Unknown
 

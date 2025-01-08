@@ -12,15 +12,21 @@
         <p id = "timer-display">Timer:</p>
         <p id = "details-display"></p>
 
-        <button class = "btn" id = "up-button">UP</button>
-        <button class = "btn" id = "down-button">DOWN</button>
-        <button class = "btn" id = "left-button">LEFT</button>
-        <button class = "btn" id = "right-button">RIGHT</button>
+        <div>
+            <button class = "btn" id = "up-button">UP</button>
+            <button class = "btn" id = "down-button">DOWN</button>
+            <button class = "btn" id = "left-button">LEFT</button>
+            <button class = "btn" id = "right-button">RIGHT</button>
+            <button class = "btn" id = "shoot-button">SHOOT</button>
+        </div>
+        <div style="margin-top: 10px;">
+            <a href = "/game" id = "replay-btn">Restart</a>
+            <a href = "/index" id = "quit-btn">Quit</a>
+        </div>
 
         
 
-        <a href = "/game" id = "replay-btn">Restart</a>
-        <a href = "/index" id = "quit-btn">Quit</a>
+        
 
     </div>
     <div id = "death-screen">
@@ -37,7 +43,7 @@
     <!--div containing three.js scene canvas-->
     <div id = "scene-container">
         <!-- background audio for game-->  
-        <audio loop autoplay muted>
+        <audio loop autoplay>
             <source src = "resources/audio/background-music.mp3" type = "audio/mpeg">sdwas
         </audio>  
     </div>

@@ -224,10 +224,15 @@ export class Enemy{
                 const enemyIndex = enemies.indexOf(this); //find position of this enemy in enemy array
                 //check index is in array
                 if (enemyIndex > -1) {
+                    //remove from parent if has one
                     if (this.parent) {
                         this.parent.remove(this);
                     }
-                    scene.remove(this); // remove enemy from the scene
+                    //make transclucent
+                    if (this.characterModel.material) {
+                        this.characterModel.material.transparent = true; // Enable transparency
+                        this.characterModel.material.opacity = 0.3;     // Set opacity (0 = fully transparent, 1 = fully opaque)
+                    } 
                     enemies.splice(enemyIndex, 1); // remove enemy from the enemies array
                 }
             }

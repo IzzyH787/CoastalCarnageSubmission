@@ -319,11 +319,7 @@ export class CharacterController{
         else{
             //swap back to idle animation
             this.updateAnimation('idle');
-        }     
-        //check if player is shooting
-        if (this.shooting){
-
-        }         
+        }             
 
         //apply movement
         this.position.x += this.velocity.x;
